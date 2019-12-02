@@ -3,6 +3,21 @@ let connectorLine = null;
 let startPoint = null;
 let startAnchor = null;
 
+function registerButtonHandlers(canvas) {
+    const symbolButtons = document.querySelectorAll('.js-buttons button');
+
+    for (const btn of symbolButtons) {
+        const symbol = btn.dataset.symbol;
+        btn.addEventListener('click', (ev) => {
+            ev.preventDefault();
+
+            getOperator(symbol).then((operator) => {
+                addOperator(operator, canvas);
+            });
+        })
+    }
+}
+
 function registerCanvasEventHandlers(canvas) {
     canvas.on('mouse:move', (ev) => {
         if (!isLineMode) {
@@ -70,6 +85,7 @@ function registerCanvasEventHandlers(canvas) {
             });
 
             connectorLine.setCoords();
+            connectorLine.sendToBack();
 
             // add line to respective anchors for update coordinates when moving
             anchor.lineInputs.push(connectorLine);
@@ -165,7 +181,7 @@ function getOperator(type) {
             operator.scale(type == 'sigma' ? 0.035 : 0.5);
             operator.set({ left: 100, top: 100 });
             operator.hasControls = false;
-            operator.hasBorders = true;
+            operator.hasBorders = false;
             operator.type = 'operator';
             operator.anchors = [getAnchor(operator, 'top'), getAnchor(operator, 'bottom')];
             operator.inputs = [];
@@ -201,24 +217,5 @@ window.onload = (ev) => {
     canvas.selection = false;
 
     registerCanvasEventHandlers(canvas);
-
-    getOperator('sigma').then((operator) => {
-        addOperator(operator, canvas);
-    });
-
-    getOperator('union').then((operator) => {
-        addOperator(operator, canvas);
-    });
-
-    getOperator('intersect').then((operator) => {
-        addOperator(operator, canvas);
-    });
-
-    getOperator('project').then((operator) => {
-        addOperator(operator, canvas);
-    });
-
-    getOperator('join').then((operator) => {
-        addOperator(operator, canvas);
-    });
+    registerButtonHandlers(canvas);
 };
