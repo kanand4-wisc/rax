@@ -4,351 +4,327 @@ let startPoint = null;
 let startAnchor = null;
 
 function registerButtonHandlers(canvas) {
-    const symbolButtons = document.querySelectorAll('.js-buttons button');
+  const symbolButtons = document.querySelectorAll('.js-buttons button');
 
-    for (const btn of symbolButtons) {
-        const symbol = btn.dataset.symbol;
-        btn.addEventListener('click', (ev) => {
-            ev.preventDefault();
+  for (const btn of symbolButtons) {
+    const symbol = btn.dataset.symbol;
+    btn.addEventListener('click', (ev) => {
+      ev.preventDefault();
 
-            getOperator(symbol).then((operator) => {
-                addOperator(operator, canvas);
-            });
-        })
-    }
+      getOperator(symbol).then((operator) => {
+        addOperator(operator, canvas);
+      });
+    })
+  }
 }
 
 function registerCanvasEventHandlers(canvas) {
-    canvas.on('mouse:move', (ev) => {
-        if (!isLineMode) {
-            return;
-        }
+  canvas.on('mouse:move', (ev) => {
+    if (!isLineMode) {
+      return;
+    }
 
-        const x = ev.e.offsetX;
-        const y = ev.e.offsetY;
+    const x = ev.e.offsetX;
+    const y = ev.e.offsetY;
 
-        if (connectorLine) {
-            connectorLine.set({
-                x2: x,
-                y2: y
-            });
+    if (connectorLine) {
+      connectorLine.set({
+        x2: x,
+        y2: y
+      });
 
-            connectorLine.setCoords();
-        } else {
-            connectorLine = new fabric.Line([
-                startPoint.x,
-                startPoint.y,
-                x,
-                y
-            ], {
-                fill: 'black',
-                stroke: 'black',
-                strokeWidth: 3,
-                selectable: false,
-                evented: false,
-            });
+      connectorLine.setCoords();
+    } else {
+      connectorLine = new fabric.Line([
+        startPoint.x,
+        startPoint.y,
+        x,
+        y
+      ], {
+        fill: 'black',
+        stroke: 'black',
+        strokeWidth: 3,
+        selectable: false,
+        evented: false,
+      });
 
-            canvas.add(connectorLine);
-        }
+      canvas.add(connectorLine);
+    }
 
-        canvas.renderAll();
-    });
+    canvas.renderAll();
+  });
 
-    canvas.on('mouse:down', (ev) => {
-        const anchor = ev.target;
-        if (anchor == null || !anchor.type) {
-            return;
-        }
+  canvas.on('mouse:down', (ev) => {
+    const anchor = ev.target;
+    if (anchor == null || !anchor.type) {
+      return;
+    }
 
-        if (anchor.type == 'operator') {
-            return;
-        }
+    if (anchor.type == 'operator') {
+      return;
+    }
 
-        isLineMode = true;
-        startPoint = anchor.getCenterPoint();
-        startAnchor = anchor;
-    });
+    isLineMode = true;
+    startPoint = anchor.getCenterPoint();
+    startAnchor = anchor;
+  });
 
-    canvas.on('mouse:up', (ev) => {
-        if (!isLineMode) {
-            return;
-        }
+  canvas.on('mouse:up', (ev) => {
+    if (!isLineMode) {
+      return;
+    }
 
-        // get target anchor
-        const anchor = ev.target;
+    // get target anchor
+    const anchor = ev.target;
 
-        // if we mouse up on the canvas or something that isn't an anchor
-        if (anchor == null
-            || !anchor.type
-            || anchor.type != 'anchor'
-            || anchor == startAnchor
-            || anchor.operator == startAnchor.operator
-            || startAnchor.dir == anchor.dir) {
-            canvas.remove(connectorLine);
-        } else {
-            endPoint = anchor.getCenterPoint();
-            connectorLine.set({
-                x2: endPoint.x,
-                y2: endPoint.y
-            });
+    // if we mouse up on the canvas or something that isn't an anchor
+    if (anchor == null
+      || !anchor.type
+      || anchor.type != 'anchor'
+      || anchor == startAnchor
+      || anchor.operator == startAnchor.operator
+      || startAnchor.dir == anchor.dir) {
+      canvas.remove(connectorLine);
+    } else {
+      endPoint = anchor.getCenterPoint();
+      connectorLine.set({
+        x2: endPoint.x,
+        y2: endPoint.y
+      });
 
-            connectorLine.setCoords();
-            connectorLine.sendToBack();
+      connectorLine.setCoords();
+      connectorLine.sendToBack();
 
-            // add line to respective anchors for updating coordinates when moving
-            anchor.lineInputs.push(connectorLine);
-            startAnchor.lineOutputs.push(connectorLine);
+      // add line to respective anchors for updating coordinates when moving
+      anchor.lineInputs.push(connectorLine);
+      startAnchor.lineOutputs.push(connectorLine);
 
-            // update input/output for operators
-            anchor.operator.inputs.push(startAnchor.operator);
-        }
+      // update input/output for operators
+      if (anchor.dir == "bottom") {
+        anchor.operator.inputs.push(startAnchor.operator);   
+      } else {
+        startAnchor.operator.inputs.push(anchor.operator);   
+      }      
+    }
 
-        canvas.renderAll();
-        resetConnector();
-    });
+    canvas.renderAll();
+    resetConnector();
+  });
 }
 
 function addOperator(operator, canvas) {
-    canvas.add(operator);
+  canvas.add(operator);
 
-    for (const anchor of operator.anchors) {
-        canvas.add(anchor);
-    }
+  for (const anchor of operator.anchors) {
+    canvas.add(anchor);
+  }
 }
 
 function getAnchorCoords(operator, dir) {
-    const center = operator.getCenterPoint();
-    const radius = operator.getBoundingRect().height / 2;
+  const center = operator.getCenterPoint();
+  const radius = operator.getBoundingRect().height / 2;
 
-    const anchorLeft = center.x - 5;
-    let anchorTop = center.y - 10 - radius - 1;
-    if (dir === 'input') {
-        anchorTop = center.y + radius + 1
-    }
+  const anchorLeft = center.x - 5;
+  let anchorTop = center.y - 10 - radius - 1;
+  if (dir === 'input') {
+    anchorTop = center.y + radius + 1
+  }
 
-    return {
-        anchorLeft,
-        anchorTop
-    };
+  return {
+    anchorLeft,
+    anchorTop
+  };
 }
 
 function resetConnector() {
-    isLineMode = false;
-    startAnchor = null;
-    startPoint = null;
-    connectorLine = null;
+  isLineMode = false;
+  startAnchor = null;
+  startPoint = null;
+  connectorLine = null;
 }
 
 function updateAnchorLines(anchor) {
-    const center = anchor.getCenterPoint();
+  const center = anchor.getCenterPoint();
 
-    for (const line of anchor.lineInputs) {
-        line.set({
-            x2: center.x,
-            y2: center.y
-        });
+  for (const line of anchor.lineInputs) {
+    line.set({
+      x2: center.x,
+      y2: center.y
+    });
 
-        line.setCoords();
-    }
+    line.setCoords();
+  }
 
-    for (const line of anchor.lineOutputs) {
-        line.set({
-            x1: center.x,
-            y1: center.y
-        });
+  for (const line of anchor.lineOutputs) {
+    line.set({
+      x1: center.x,
+      y1: center.y
+    });
 
-        line.setCoords();
-    }
+    line.setCoords();
+  }
 }
 
 function getAnchor(operator, dir) {
-    const { anchorLeft, anchorTop } = getAnchorCoords(operator, dir);
+  const { anchorLeft, anchorTop } = getAnchorCoords(operator, dir);
 
-    const anchor = new fabric.Circle({
-        radius: 5,
-        fill: '#ffc4c4',
-        left: anchorLeft,
-        top: anchorTop
-    });
+  const anchor = new fabric.Circle({
+    radius: 5,
+    fill: '#ffc4c4',
+    left: anchorLeft,
+    top: anchorTop
+  });
 
-    anchor.hasControls = false;
-    anchor.hasBorders = false;
-    anchor.selectable = false;
-    anchor.lockMovementY = true;
-    anchor.lockMovementX = true;
-    anchor.dir = dir;
-    anchor.operator = operator;
-    anchor.type = 'anchor';
-    anchor.lineInputs = [];
-    anchor.lineOutputs = [];
+  anchor.hasControls = false;
+  anchor.hasBorders = false;
+  anchor.selectable = false;
+  anchor.lockMovementY = true;
+  anchor.lockMovementX = true;
+  anchor.dir = dir;
+  anchor.operator = operator;
+  anchor.type = 'anchor';
+  anchor.lineInputs = [];
+  anchor.lineOutputs = [];
 
-    return anchor;
+  return anchor;
 }
-
-/*
-{
-"root": "x1",
-"x1": {
-"operator": "Project",
-"input": "x2",
-"colNames": ["a"]
-    },
-"x2": {
-"operator": "Join",
-"input": ["x3", "x4"],
-"joinColumn": "b"
-    },
-"x3": {
-"operator": "Select",
-"input": "A",
-"condition": "a>3"
-    },
-"x4": {
-"operator": "Select",
-"input": "B",
-"condition": "c==5"
-    }
-}
-*/
 
 let counter = 1;
 function getVarName() {
-    const varName = `x${counter}`;
-    counter++;
+  const varName = `x${counter}`;
+  counter++;
 
-    return varName;
+  return varName;
 }
 
 function getOutputFromOperator(operator, jsonObj) {
-    if (operator.operType == 'sigma') {
-        const condition = operator.condition;
-        const key = getVarName();
-        const input = getOutputFromOperator(operator.inputs[0], jsonObj);
+  if (operator.operType == 'sigma') {
+    const condition = operator.condition;
+    const key = getVarName();
+    const input = getOutputFromOperator(operator.inputs[0], jsonObj);
 
-        // insert key into the passed object
-        jsonObj[key] = {
-            "operator": "Select",
-            "input": input,
-            condition
-        };
+    // insert key into the passed object
+    jsonObj[key] = {
+      "operator": "Select",
+      "input": input,
+      condition
+    };
 
-        return key;
-    } else if (operator.operType == 'project') {
-        const colNames = operator.colNames;
-        const key = getVarName();
-        const input = getOutputFromOperator(operator.inputs[0], jsonObj);
+    return key;
+  } else if (operator.operType == 'project') {
+    const colNames = operator.colNames;
+    const key = getVarName();
+    const input = getOutputFromOperator(operator.inputs[0], jsonObj);
 
-        // insert key into the passed object
-        jsonObj[key] = {
-            "operator": "Project",
-            "input": input,
-            colNames
-        };
+    // insert key into the passed object
+    jsonObj[key] = {
+      "operator": "Project",
+      "input": input,
+      colNames
+    };
 
-        return key;
-    } else if (operator.operType == 'join') {
-        const joinColumn = operator.joinColumn;
-        const key = getVarName();
-        const input = [
-            getOutputFromOperator(operator.inputs[0], jsonObj),
-            getOutputFromOperator(operator.inputs[1], jsonObj)
-        ];
+    return key;
+  } else if (operator.operType == 'join') {
+    const joinColumn = operator.joinColumn;
+    const key = getVarName();
+    const input = [
+      getOutputFromOperator(operator.inputs[0], jsonObj),
+      getOutputFromOperator(operator.inputs[1], jsonObj)
+    ];
 
-        // insert key into the passed object
-        jsonObj[key] = {
-            "operator": "Join",
-            "input": input,
-            joinColumn
-        };
+    // insert key into the passed object
+    jsonObj[key] = {
+      "operator": "Join",
+      "input": input,
+      joinColumn
+    };
 
-        return key;
-    } else if (operator.operType == 'table') {
-        return operator.tableName;
-    }
+    return key;
+  } else if (operator.operType == 'table') {
+    return operator.tableName;
+  }
 }
 
 function getOperator(operType) {
-    return new Promise((resolve) => {
-        fabric.loadSVGFromURL(`static/assets/${operType}.svg`, function (objects, options) {
-            operator = fabric.util.groupSVGElements(objects, options);
-            operator.scale(operType == 'sigma' ? 0.035 : 0.5);
-            operator.set({ left: 100, top: 100 });
-            operator.hasControls = false;
-            operator.hasBorders = false;
-            operator.type = 'operator';
-            operator.operType = operType != 'A' && operType != 'B' ? operType : 'table';
-            operator.tableName = operType != 'A' && operType != 'B' ? null : operType;
-            operator.anchors = [getAnchor(operator, 'output'), getAnchor(operator, 'input')];
-            operator.inputs = [];
+  return new Promise((resolve) => {
+    fabric.loadSVGFromURL(`static/assets/${operType}.svg`, function (objects, options) {
+      operator = fabric.util.groupSVGElements(objects, options);
+      operator.scale(operType == 'sigma' ? 0.035 : 0.5);
+      operator.set({ left: 100, top: 100 });
+      operator.hasControls = false;
+      operator.hasBorders = false;
+      operator.type = 'operator';
+      operator.operType = operType != 'A' && operType != 'B' ? operType : 'table';
+      operator.tableName = operType != 'A' && operType != 'B' ? null : operType;
+      operator.anchors = [getAnchor(operator, 'output'), getAnchor(operator, 'input')];
+      operator.inputs = [];
 
-            if (operType == 'join') {
-                operator.joinColumn = window.prompt('Enter join column');
-            } else if (operType == 'sigma') {
-                operator.condition = window.prompt('Enter condition');
-            } else if (operType == 'project') {
-                operator.colNames = window.prompt('Enter comma separated column names');
-            }
+      if (operType == 'join') {
+        operator.joinColumn = window.prompt('Enter join column');
+      } else if (operType == 'sigma') {
+        operator.condition = window.prompt('Enter condition');
+      } else if (operType == 'project') {
+        operator.colNames = window.prompt('Enter comma separated column names');
+      }
 
-            // move anchors along with the operator
-            operator.on('moving', (ev) => {
-                const operator = ev.target;
+      // move anchors along with the operator
+      operator.on('moving', (ev) => {
+        const operator = ev.target;
 
-                for (const anchor of operator.anchors) {
-                    const { anchorLeft, anchorTop } = getAnchorCoords(operator, anchor.dir);
+        for (const anchor of operator.anchors) {
+          const { anchorLeft, anchorTop } = getAnchorCoords(operator, anchor.dir);
 
-                    anchor.set({
-                        top: anchorTop,
-                        left: anchorLeft
-                    });
+          anchor.set({
+            top: anchorTop,
+            left: anchorLeft
+          });
 
-                    anchor.setCoords();
+          anchor.setCoords();
 
-                    updateAnchorLines(anchor);
-                }
-            });
+          updateAnchorLines(anchor);
+        }
+      });
 
-            operator.on('mousedblclick', (ev) => {
-                const operator = ev.target;
+      operator.on('mousedblclick', (ev) => {
+        const operator = ev.target;
 
-                // return if nothing is connected
-                if (operator.inputs.length == 0) {
-                    return;
-                }
-    
-                const jsonObj = {};
-                const root = getOutputFromOperator(operator, jsonObj);
-    
-                // add root
-                jsonObj['root'] = root;
+        // return if nothing is connected
+        if (operator.inputs.length == 0) {
+          return;
+        }
 
-                console.log(jsonObj);
-    
-                fetch("/query", {
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    },
-                    method: "POST",
-                    body: JSON.stringify(jsonObj)
-                })
-	        .then((resp) => resp.json()) // Transform the data into json
-         	.then(function(data) {
-			const out = document.getElementById('js-output');
-			out.innerText = data.res;
-		})
-            });
+        const jsonObj = {};
+        const root = getOutputFromOperator(operator, jsonObj);
 
-            resolve(operator);
-        });
+        // add root
+        jsonObj['root'] = root;
+
+        fetch("/query", {
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          method: "POST",
+          body: JSON.stringify(jsonObj)
+        })
+        .then((resp) => resp.json())
+        .then(function (data) {
+          const out = document.getElementById('js-output');
+          out.innerText = data.res;
+        })
+      });
+
+      resolve(operator);
     });
+  });
 }
 
 window.onload = (ev) => {
-    const canvas = new fabric.Canvas('board');
+  const canvas = new fabric.Canvas('board');
 
-    // disable group selection
-    canvas.selection = false;
+  // disable group selection
+  canvas.selection = false;
 
-    registerCanvasEventHandlers(canvas);
-    registerButtonHandlers(canvas);
+  registerCanvasEventHandlers(canvas);
+  registerButtonHandlers(canvas);
 };

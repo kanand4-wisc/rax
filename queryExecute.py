@@ -43,17 +43,17 @@ def prepare_data():
 #============== Execute Actual Query ========
 def main():
     with open("sampleInput.json", "r") as query:
-	data = json.load(query)
-	rootNode = data.get("root")
-	finalQuery = decryptQueryData(data, rootNode)
+        data = json.load(query)
+        rootNode = data.get("root")
+        finalQuery = decryptQueryData(data, rootNode)
 
-	print("final query = ", finalQuery)
+        print("final query = ", finalQuery)
         cur = prepare_data()
-	cur.execute(finalQuery)
-	results = cur.fetchall()
-	print("Resuts of the Query")
-	for row in results:
-		print(row)
+        cur.execute(finalQuery)
+        results = cur.fetchall()
+        print("Resuts of the Query")
+        for row in results:
+            print(row)
 
 if __name__=="__main__":
     main()
