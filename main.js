@@ -56,7 +56,11 @@ function registerCanvasEventHandlers(canvas) {
 
     canvas.on('mouse:down', (ev) => {
         const anchor = ev.target;
-        if (anchor == null || !anchor.type || anchor.type != 'anchor') {
+        if (anchor == null || !anchor.type) {
+            return;
+        }
+
+        if (anchor.type == 'operator') {
             return;
         }
 
@@ -74,11 +78,15 @@ function registerCanvasEventHandlers(canvas) {
         const anchor = ev.target;
 
         // if we mouse up on the canvas or something that isn't an anchor
-        if (anchor == null || !anchor.type || anchor.type != 'anchor' || anchor == startAnchor) {
+        if (anchor == null
+            || !anchor.type
+            || anchor.type != 'anchor'
+            || anchor == startAnchor
+            || anchor.operator == startAnchor.operator
+            || startAnchor.dir == anchor.dir) {
             canvas.remove(connectorLine);
         } else {
             endPoint = anchor.getCenterPoint();
-
             connectorLine.set({
                 x2: endPoint.x,
                 y2: endPoint.y
@@ -87,9 +95,12 @@ function registerCanvasEventHandlers(canvas) {
             connectorLine.setCoords();
             connectorLine.sendToBack();
 
-            // add line to respective anchors for update coordinates when moving
+            // add line to respective anchors for updating coordinates when moving
             anchor.lineInputs.push(connectorLine);
             startAnchor.lineOutputs.push(connectorLine);
+
+            // update input/output for operators
+            anchor.operator.inputs.push(startAnchor.operator);
         }
 
         canvas.renderAll();
@@ -111,7 +122,7 @@ function getAnchorCoords(operator, dir) {
 
     const anchorLeft = center.x - 5;
     let anchorTop = center.y - 10 - radius - 1;
-    if (dir === 'bottom') {
+    if (dir === 'input') {
         anchorTop = center.y + radius + 1
     }
 
@@ -174,18 +185,109 @@ function getAnchor(operator, dir) {
     return anchor;
 }
 
-function getOperator(type) {
+/*
+{
+"root": "x1",
+"x1": {
+"operator": "Project",
+"input": "x2",
+"colNames": ["a"]
+    },
+"x2": {
+"operator": "Join",
+"input": ["x3", "x4"],
+"joinColumn": "b"
+    },
+"x3": {
+"operator": "Select",
+"input": "A",
+"condition": "a>3"
+    },
+"x4": {
+"operator": "Select",
+"input": "B",
+"condition": "c==5"
+    }
+}
+*/
+
+let counter = 1;
+function getVarName() {
+    const varName = `x${counter}`;
+    counter++;
+
+    return varName;
+}
+
+function getOutputFromOperator(operator, jsonObj) {
+    if (operator.operType == 'sigma') {
+        const condition = operator.condition;
+        const key = getVarName();
+        const input = getOutputFromOperator(operator.inputs[0], jsonObj);
+
+        // insert key into the passed object
+        jsonObj[key] = {
+            "operator": "Select",
+            "input": input,
+            condition
+        };
+
+        return key;
+    } else if (operator.operType == 'project') {
+        const colNames = operator.colNames;
+        const key = getVarName();
+        const input = getOutputFromOperator(operator.inputs[0], jsonObj);
+
+        // insert key into the passed object
+        jsonObj[key] = {
+            "operator": "Project",
+            "input": input,
+            colNames
+        };
+
+        return key;
+    } else if (operator.operType == 'join') {
+        const joinColumn = operator.joinColumn;
+        const key = getVarName();
+        const input = [
+            getOutputFromOperator(operator.inputs[0], jsonObj),
+            getOutputFromOperator(operator.inputs[1], jsonObj)
+        ];
+
+        // insert key into the passed object
+        jsonObj[key] = {
+            "operator": "Join",
+            "input": input,
+            joinColumn
+        };
+
+        return key;
+    } else if (operator.operType == 'table') {
+        return operator.tableName;
+    }
+}
+
+function getOperator(operType) {
     return new Promise((resolve) => {
-        fabric.loadSVGFromURL(`/assets/${type}.svg`, function (objects, options) {
+        fabric.loadSVGFromURL(`assets/${operType}.svg`, function (objects, options) {
             operator = fabric.util.groupSVGElements(objects, options);
-            operator.scale(type == 'sigma' ? 0.035 : 0.5);
+            operator.scale(operType == 'sigma' ? 0.035 : 0.5);
             operator.set({ left: 100, top: 100 });
             operator.hasControls = false;
             operator.hasBorders = false;
             operator.type = 'operator';
-            operator.anchors = [getAnchor(operator, 'top'), getAnchor(operator, 'bottom')];
+            operator.operType = operType != 'A' && operType != 'B' ? operType : 'table';
+            operator.tableName = operType != 'A' && operType != 'B' ? null : operType;
+            operator.anchors = [getAnchor(operator, 'output'), getAnchor(operator, 'input')];
             operator.inputs = [];
-            operator.outputs = [];
+
+            if (operType == 'join') {
+                operator.joinColumn = window.prompt('Enter join column');
+            } else if (operType == 'sigma') {
+                operator.condition = window.prompt('Enter condition');
+            } else if (operType == 'project') {
+                operator.colNames = window.prompt('Enter comma separated column names');
+            }
 
             // move anchors along with the operator
             operator.on('moving', (ev) => {
@@ -203,6 +305,35 @@ function getOperator(type) {
 
                     updateAnchorLines(anchor);
                 }
+            });
+
+            operator.on('mousedblclick', (ev) => {
+                const operator = ev.target;
+
+                // return if nothing is connected
+                if (operator.inputs.length == 0) {
+                    return;
+                }
+    
+                const jsonObj = {};
+                const root = getOutputFromOperator(operator, jsonObj);
+    
+                // add root
+                jsonObj['root'] = root;
+
+                console.log(jsonObj);
+    
+                /* fetch("http://localhost:5000", {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    method: "POST",
+                    body: JSON.stringify(jsonObj)
+                })
+                .then(function (res) { 
+                    console.log(res) 
+                }); */
             });
 
             resolve(operator);
