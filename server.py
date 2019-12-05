@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, render_template
 import sqlite3
 import os, json
 from queryTranslate import decryptQueryData
@@ -6,7 +6,12 @@ from queryExecute import prepare_data
 
 app = Flask(__name__)
 
-@app.route('/', methods=['POST'])
+
+@app.route('/')
+def home():
+    return render_template('index.html')
+
+@app.route('/query', methods=['POST'])
 def root():
     print(request.json)
     data = request.json
@@ -18,7 +23,12 @@ def root():
     cur.execute(finalQuery)
     results = cur.fetchall()
 
-    return " ".join(map(str, results))
+    
+
+    res = {
+            "res":" ".join(map(str, results))
+            }
+    return json.dumps(res)
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

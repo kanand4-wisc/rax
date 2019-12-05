@@ -269,7 +269,7 @@ function getOutputFromOperator(operator, jsonObj) {
 
 function getOperator(operType) {
     return new Promise((resolve) => {
-        fabric.loadSVGFromURL(`assets/${operType}.svg`, function (objects, options) {
+        fabric.loadSVGFromURL(`static/assets/${operType}.svg`, function (objects, options) {
             operator = fabric.util.groupSVGElements(objects, options);
             operator.scale(operType == 'sigma' ? 0.035 : 0.5);
             operator.set({ left: 100, top: 100 });
@@ -323,7 +323,7 @@ function getOperator(operType) {
 
                 console.log(jsonObj);
     
-                /* fetch("http://localhost:5000", {
+                fetch("/query", {
                     headers: {
                         'Accept': 'application/json',
                         'Content-Type': 'application/json'
@@ -331,9 +331,11 @@ function getOperator(operType) {
                     method: "POST",
                     body: JSON.stringify(jsonObj)
                 })
-                .then(function (res) { 
-                    console.log(res) 
-                }); */
+	        .then((resp) => resp.json()) // Transform the data into json
+         	.then(function(data) {
+			const out = document.getElementById('js-output');
+			out.innerText = data.res;
+		})
             });
 
             resolve(operator);
