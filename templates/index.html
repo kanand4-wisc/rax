@@ -10,14 +10,23 @@
     <div class="container">
         <div class="row mt-3">
             <div class="col-sm-12">
-
                 <h1 class="text-center">Relational Algebra</h1>
             </div>
         </div>
 
         <div class="row mt-3">
-            <div class="col-sm-12 border">
-                <canvas id="board" height="600" width="1200"></canvas>
+            <div class="col-sm-8 border m-0 p-0">
+                <canvas id="board" class='img-responsive'></canvas>
+            </div>
+            <div class="col-sm-1 m-0 p-0">
+            </div>
+            <div class="col-sm-3 m-0 p-0">
+                <h3 class="text-center">Query Output</h3>
+
+                <div class="">
+                    <p id="js-output" class="lead">
+                    </p>
+                </div>
             </div>
         </div>
 
@@ -35,9 +44,7 @@
         </div>
 
         <div class="row mt-3">
-            <div id="js-output" class="col-sm-12 js-buttons">
-                
-            </div>
+
         </div>
     </div>
 

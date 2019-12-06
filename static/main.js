@@ -2,6 +2,14 @@ let isLineMode = false;
 let connectorLine = null;
 let startPoint = null;
 let startAnchor = null;
+let counter = 1;
+
+function getVarName() {
+  const varName = `x${counter}`;
+  counter++;
+
+  return varName;
+}
 
 function registerButtonHandlers(canvas) {
   const symbolButtons = document.querySelectorAll('.js-buttons button');
@@ -100,11 +108,11 @@ function registerCanvasEventHandlers(canvas) {
       startAnchor.lineOutputs.push(connectorLine);
 
       // update input/output for operators
-      if (anchor.dir == "bottom") {
-        anchor.operator.inputs.push(startAnchor.operator);   
+      if (anchor.dir == "input") {
+        anchor.operator.inputs.push(startAnchor.operator);
       } else {
-        startAnchor.operator.inputs.push(anchor.operator);   
-      }      
+        startAnchor.operator.inputs.push(anchor.operator);
+      }
     }
 
     canvas.renderAll();
@@ -117,6 +125,10 @@ function addOperator(operator, canvas) {
 
   for (const anchor of operator.anchors) {
     canvas.add(anchor);
+  }
+
+  if (operator.txt) {
+    canvas.add(operator.txt);
   }
 }
 
@@ -189,12 +201,30 @@ function getAnchor(operator, dir) {
   return anchor;
 }
 
-let counter = 1;
-function getVarName() {
-  const varName = `x${counter}`;
-  counter++;
+function getTextBoxCoords(operator) {
+  const center = operator.getCenterPoint();
+  const radius = operator.getBoundingRect().height / 2;
 
-  return varName;
+  const textLeft = center.x + radius + 1;
+  const textTop = center.y + radius + 1;
+
+  return {
+    textLeft,
+    textTop
+  };
+}
+
+function getTextBox(txt, operator) {
+  const {textLeft, textTop} = getTextBoxCoords(operator);
+
+  const textBox = new fabric.Text(txt,
+  {
+    left: textLeft,
+    top: textTop,
+    fontSize: 20
+  });
+
+  return textBox;
 }
 
 function getOutputFromOperator(operator, jsonObj) {
@@ -256,15 +286,24 @@ function getOperator(operType) {
       operator.type = 'operator';
       operator.operType = operType != 'A' && operType != 'B' ? operType : 'table';
       operator.tableName = operType != 'A' && operType != 'B' ? null : operType;
-      operator.anchors = [getAnchor(operator, 'output'), getAnchor(operator, 'input')];
+      
       operator.inputs = [];
 
       if (operType == 'join') {
         operator.joinColumn = window.prompt('Enter join column');
+        operator.txt = getTextBox(operator.joinColumn, operator);
+        operator.anchors = [getAnchor(operator, 'output'), getAnchor(operator, 'input')];
       } else if (operType == 'sigma') {
         operator.condition = window.prompt('Enter condition');
+        operator.txt = getTextBox(operator.condition, operator);
+        operator.anchors = [getAnchor(operator, 'output'), getAnchor(operator, 'input')];
       } else if (operType == 'project') {
         operator.colNames = window.prompt('Enter comma separated column names');
+        operator.txt = getTextBox(operator.colNames, operator);
+        operator.anchors = [getAnchor(operator, 'output'), getAnchor(operator, 'input')];
+      } else if (operator.operType == 'table') {
+        operator.txt = getTextBox(operator.tableName, operator);
+        operator.anchors = [getAnchor(operator, 'output')];
       }
 
       // move anchors along with the operator
@@ -280,8 +319,17 @@ function getOperator(operType) {
           });
 
           anchor.setCoords();
-
           updateAnchorLines(anchor);
+        }
+
+        if (operator.txt) {
+          const {textLeft, textTop} = getTextBoxCoords(operator);
+          operator.txt.set({
+            left: textLeft,
+            top: textTop
+          });
+
+          operator.txt.setCoords();
         }
       });
 
@@ -307,11 +355,11 @@ function getOperator(operType) {
           method: "POST",
           body: JSON.stringify(jsonObj)
         })
-        .then((resp) => resp.json())
-        .then(function (data) {
-          const out = document.getElementById('js-output');
-          out.innerText = data.res;
-        })
+          .then((resp) => resp.json())
+          .then(function (data) {
+            const out = document.getElementById('js-output');
+            out.innerText = data.res;
+          })
       });
 
       resolve(operator);
@@ -319,11 +367,23 @@ function getOperator(operType) {
   });
 }
 
+// initialize everything and set event handlers
 window.onload = (ev) => {
-  const canvas = new fabric.Canvas('board');
+  const canvasId = 'board';
+  const canvasDom = document.getElementById(canvasId);
+
+  const  parentWidth = canvasDom.parentNode.offsetWidth;
+  canvasDom.width = parentWidth;
+  canvasDom.height = "600";
+
+  const canvas = new fabric.Canvas(canvasId);
 
   // disable group selection
   canvas.selection = false;
+  canvas.setHeight(600);
+  canvas.setWidth(parentWidth);
+
+  canvas.renderAll();
 
   registerCanvasEventHandlers(canvas);
   registerButtonHandlers(canvas);
