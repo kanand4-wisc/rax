@@ -39,6 +39,10 @@ def decryptQueryData(data, rootNode):
             query = "Select * from (" + decryptQueryData(data, inputTable) + ") as " + inputTable + " where " + inputTable + "." + condition
         else:
             query = "Select * from " + inputTable + " where " + condition
+
+    if operator == "Table":
+        inputTable = nodeValue.get("input")
+        query = "Select * from " + inputTable
     
     return query
 
