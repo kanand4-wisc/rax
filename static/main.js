@@ -52,8 +52,12 @@ function registerCanvasEventHandlers(canvas) {
         fill: 'black',
         stroke: 'black',
         strokeWidth: 3,
-        selectable: false,
-        evented: false,
+        selectable: true,
+        evented: true,
+        hasControls : false,
+        lockMovementX: true,
+        lockMovementY: true,
+        lockRotation: true
       });
 
       canvas.add(connectorLine);
@@ -271,7 +275,15 @@ function getOutputFromOperator(operator, jsonObj) {
 
     return key;
   } else if (operator.operType == 'table') {
-    return operator.tableName;
+    const key = getVarName();
+
+    // insert key into the passed object
+    jsonObj[key] = {
+      "operator": "Table",
+      "input": operator.tableName,
+    };
+
+    return key;
   }
 }
 
@@ -337,10 +349,10 @@ function getOperator(operType) {
         const operator = ev.target;
 
         // return if nothing is connected
-        if (operator.inputs.length == 0) {
+        if (operator.inputs.length == 0 && operator.operType != 'table') {
           return;
         }
-
+  
         const jsonObj = {};
         const root = getOutputFromOperator(operator, jsonObj);
 
