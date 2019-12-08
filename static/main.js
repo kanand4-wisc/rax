@@ -21,6 +21,11 @@ function registerButtonHandlers(canvas) {
 
       if (symbol == 'clear') {
         canvas.clear();
+
+        // clear query output
+        const out = document.getElementById('js-output');
+        out.innerText = "";
+
         return;
       }
 
