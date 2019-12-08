@@ -20,11 +20,7 @@
             bottom: 0;
             width: 100%;
             height: 60px;
-
-            /* Set the fixed height of the footer here */
-            line-height: 60px;
-            /* Vertically center the text there */
-            background-color: #f5f5f5;
+            line-height: 30px;
         }
     </style>
 </head>
@@ -71,28 +67,27 @@
                     <div class="col-sm-2"></div>
                     <div class="col-sm-8">
                         <button id="js-add-join" class="btn btn-success btn-block" data-symbol="join"
-                            type="submit">Join</button>
+                            type="submit">Natural Join</button>
                     </div>
                 </div>
                 <div class="row mt-2">
                     <div class="col-sm-2"></div>
                     <div class="col-sm-8">
-                        <button id="js-add-join" class="btn btn-success btn-block" data-symbol="A"
-                            type="submit">A</button>
+                        <button id="js-add-join" class="btn btn-success btn-block" data-symbol="A" type="submit">Table
+                            A</button>
                     </div>
                 </div>
                 <div class="row mt-2">
                     <div class="col-sm-2"></div>
                     <div class="col-sm-8">
-                        <button id="js-add-join" class="btn btn-success btn-block" data-symbol="B"
-                            type="submit">B</button>
+                        <button id="js-add-join" class="btn btn-success btn-block" data-symbol="B" type="submit">Table
+                            B</button>
                     </div>
                 </div>
                 <div class="row mt-2">
                     <div class="col-sm-2"></div>
                     <div class="col-sm-8">
-                        <button id="js-clear" class="btn btn-danger btn-block"
-                            type="submit">Clear</button>
+                        <button id="js-clear" class="btn btn-danger btn-block" type="submit">Clear</button>
                     </div>
                 </div>
             </div>
@@ -114,9 +109,16 @@
     </div>
 
     <footer class="footer">
-        <div class="container-fluid text-muted text-center">                
-            <div>Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from
-                <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+        <div class="container-fluid text-center">
+            <p class="m-0 p-0">
+                Hosted with <span class="text-danger">♥</span> on <a
+                    href="https://github.com/kartikanand/rax">Github</a>
+            </p>
+            <p class="text-muted m-0 p-0">
+                Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from
+                <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>
+            </p>
+            <div></div>
         </div>
     </footer>
 
@@ -131,7 +133,6 @@
         crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/3.4.0/fabric.min.js"></script>
     <script src="static/main.js"></script>
-
 </body>
 
 </html>
