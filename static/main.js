@@ -24,6 +24,20 @@ function registerButtonHandlers(canvas) {
         return;
       }
 
+      if (symbol == 'back') {
+        const introDom = document.getElementById('js-intro');
+        const raxDom = document.getElementById('js-rax');
+
+        canvas.clear();
+        window.db = null;
+        
+        // toggle between intro and rax modes
+        introDom.classList.remove('hidden');
+        raxDom.classList.add('hidden');
+
+        return;
+      }
+
       getOperator(symbol).then((operator) => {
         addOperator(operator, canvas);
       });
