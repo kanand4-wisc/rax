@@ -297,6 +297,34 @@ function getOutputFromOperator(operator, jsonObj) {
     };
 
     return key;
+  } else if (operator.operType == 'union') {
+    const key = getVarName();
+    const input = [
+      getOutputFromOperator(operator.inputs[0], jsonObj),
+      getOutputFromOperator(operator.inputs[1], jsonObj)
+    ];
+
+    // insert key into the passed object
+    jsonObj[key] = {
+      "operator": "Union",
+      "input": input,
+    };
+
+    return key;
+  } else if (operator.operType == 'intersect') {
+    const key = getVarName();
+    const input = [
+      getOutputFromOperator(operator.inputs[0], jsonObj),
+      getOutputFromOperator(operator.inputs[1], jsonObj)
+    ];
+
+    // insert key into the passed object
+    jsonObj[key] = {
+      "operator": "Intersect",
+      "input": input,
+    };
+
+    return key;
   } else if (operator.operType == 'table') {
     const key = getVarName();
 
@@ -337,6 +365,8 @@ function getOperator(operType) {
       } else if (operator.operType == 'table') {
         operator.txt = getTextBox(operator.tableName, operator);
         operator.anchors = [getAnchor(operator, 'output')];
+      } else {
+        operator.anchors = [getAnchor(operator, 'output'), getAnchor(operator, 'input')];
       }
 
       // move anchors along with the operator

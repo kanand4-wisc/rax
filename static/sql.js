@@ -61,6 +61,32 @@ function decryptQueryData(data, rootNode) {
             querySecondTable = inputTables[1]
 
         query = "Select * from " + queryFirstTable + " Natural JOIN " + querySecondTable;
+    } else if (operator == "Union") {
+        inputTables = nodeValue["input"]
+        if (inputTables[0] in data)
+            queryFirstTable = decryptQueryData(data, inputTables[0])
+        else
+            queryFirstTable = inputTables[0]
+
+        if (inputTables[1] in data)
+            querySecondTable = decryptQueryData(data, inputTables[1])
+        else
+            querySecondTable = inputTables[1]
+
+        query = queryFirstTable + " Union " + querySecondTable;
+    } else if (operator == "Intersect") {
+        inputTables = nodeValue["input"]
+        if (inputTables[0] in data)
+            queryFirstTable = decryptQueryData(data, inputTables[0])
+        else
+            queryFirstTable = inputTables[0]
+
+        if (inputTables[1] in data)
+            querySecondTable = decryptQueryData(data, inputTables[1])
+        else
+            querySecondTable = inputTables[1]
+
+        query = queryFirstTable + " Intersect " + querySecondTable;
     } else if (operator == "Select") {
         inputTable = nodeValue["input"]
         condition = nodeValue["condition"]
