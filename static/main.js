@@ -19,6 +19,11 @@ function registerButtonHandlers(canvas) {
     btn.addEventListener('click', (ev) => {
       ev.preventDefault();
 
+      if (symbol == 'clear') {
+        canvas.clear();
+        return;
+      }
+
       getOperator(symbol).then((operator) => {
         addOperator(operator, canvas);
       });
@@ -380,11 +385,7 @@ function getOperator(operType) {
   });
 }
 
-// initialize everything and set event handlers
-window.onload = async (ev) => {
-  window.db = await initDB();
-  insertSampleData(db);
-
+function initCanvas () {
   const canvasId = 'board';
   const canvasDom = document.getElementById(canvasId);
 
@@ -403,4 +404,26 @@ window.onload = async (ev) => {
 
   registerCanvasEventHandlers(canvas);
   registerButtonHandlers(canvas);
+}
+
+async function loadSample () {
+  window.db = await initDB();
+  insertSampleData(db);
+}
+
+// initialize everything and set event handlers
+window.onload = async (ev) => {  
+  const loadSampleButton = document.getElementById('js-loadsample');
+  loadSampleButton.addEventListener('click', async (ev) => {
+    ev.preventDefault();
+    const introDom = document.getElementById('js-intro');
+    const raxDom = document.getElementById('js-rax');
+
+    // toggle between intro and rax modes
+    introDom.classList.add('hidden');
+    raxDom.classList.remove('hidden');
+
+    await loadSample();
+    initCanvas();
+  })
 };
