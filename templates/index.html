@@ -1,138 +1,136 @@
 <html>
 
 <head>
-    <title>Rax</title>
-    <link rel="stylesheet" href="static/bootstrap.min.css">
+  <title>Rax</title>
+  <link rel="stylesheet" href="static/bootstrap.min.css">
 
-    <style>
-        html {
-            position: relative;
-            min-height: 100%;
-        }
+  <style>
+    html {
+      position: relative;
+      min-height: 100%;
+    }
 
-        body {
-            margin-bottom: 60px;
-            /* Margin bottom by footer height */
-        }
+    body {
+      margin-bottom: 60px;
+      /* Margin bottom by footer height */
+    }
 
-        .footer {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            height: 60px;
-            line-height: 30px;
-        }
-    </style>
+    .footer {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 60px;
+      line-height: 30px;
+    }
+  </style>
 </head>
 
 <body>
-    <div class="container-fluid">
-        <div class="row mt-3">
-            <div class="col-sm-2 js-buttons">
-                <div class="row">
-                    <div class="col-sm-12 text-center">
-                        <img src="static/assets/dino.png" class="img-responsive text-center" alt="">
-                        <h1 class="">RaX</h1>
-                    </div>
-                </div>
-                <div class="row mt-2">
-                    <div class="col-sm-2"></div>
-                    <div class="col-sm-8">
-                        <button id="js-add-sigma" class="btn btn-success btn-block" data-symbol="sigma"
-                            type="submit">Select</button>
-                    </div>
-                </div>
-                <div class="row mt-2">
-                    <div class="col-sm-2"></div>
-                    <div class="col-sm-8">
-                        <button id="js-add-project" class="btn btn-success btn-block" data-symbol="project"
-                            type="submit">Project</button>
-                    </div>
-                </div>
-                <div class="row mt-2">
-                    <div class="col-sm-2"></div>
-                    <div class="col-sm-8">
-                        <button id="js-add-union" class="btn btn-success btn-block" data-symbol="union"
-                            type="submit">Union</button>
-                    </div>
-                </div>
-                <div class="row mt-2">
-                    <div class="col-sm-2"></div>
-                    <div class="col-sm-8">
-                        <button id="js-add-intersect" class="btn btn-success btn-block" data-symbol="intersect"
-                            type="submit">Intersect</button>
-                    </div>
-                </div>
-                <div class="row mt-2">
-                    <div class="col-sm-2"></div>
-                    <div class="col-sm-8">
-                        <button id="js-add-join" class="btn btn-success btn-block" data-symbol="join"
-                            type="submit">Natural Join</button>
-                    </div>
-                </div>
-                <div class="row mt-2">
-                    <div class="col-sm-2"></div>
-                    <div class="col-sm-8">
-                        <button id="js-add-join" class="btn btn-success btn-block" data-symbol="A" type="submit">Table
-                            A</button>
-                    </div>
-                </div>
-                <div class="row mt-2">
-                    <div class="col-sm-2"></div>
-                    <div class="col-sm-8">
-                        <button id="js-add-join" class="btn btn-success btn-block" data-symbol="B" type="submit">Table
-                            B</button>
-                    </div>
-                </div>
-                <div class="row mt-2">
-                    <div class="col-sm-2"></div>
-                    <div class="col-sm-8">
-                        <button id="js-clear" class="btn btn-danger btn-block" type="submit">Clear</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-sm-7 border m-0 p-0">
-                <canvas id="board" class='img-responsive'></canvas>
-            </div>
-
-            <div class="col-sm-3">
-                <h3 class="text-center">Query Output</h3>
-
-                <div class="">
-                    <p class="lead">
-                        <pre id="js-output"></pre>
-                    </p>
-                </div>
-            </div>
+  <div class="container-fluid">
+    <div class="row mt-3">
+      <div class="col-sm-2 js-buttons">
+        <div class="row">
+          <div class="col-sm-12 text-center">
+            <img src="static/assets/dino.png" class="img-responsive text-center" alt="">
+            <h1 class="">RaX</h1>
+          </div>
         </div>
+        <div class="row mt-2">
+          <div class="col-sm-2"></div>
+          <div class="col-sm-8">
+            <button id="js-add-sigma" class="btn btn-success btn-block" data-symbol="sigma"
+              type="submit">Select</button>
+          </div>
+        </div>
+        <div class="row mt-2">
+          <div class="col-sm-2"></div>
+          <div class="col-sm-8">
+            <button id="js-add-project" class="btn btn-success btn-block" data-symbol="project"
+              type="submit">Project</button>
+          </div>
+        </div>
+        <div class="row mt-2">
+          <div class="col-sm-2"></div>
+          <div class="col-sm-8">
+            <button id="js-add-union" class="btn btn-success btn-block" data-symbol="union" type="submit">Union</button>
+          </div>
+        </div>
+        <div class="row mt-2">
+          <div class="col-sm-2"></div>
+          <div class="col-sm-8">
+            <button id="js-add-intersect" class="btn btn-success btn-block" data-symbol="intersect"
+              type="submit">Intersect</button>
+          </div>
+        </div>
+        <div class="row mt-2">
+          <div class="col-sm-2"></div>
+          <div class="col-sm-8">
+            <button id="js-add-join" class="btn btn-success btn-block" data-symbol="join" type="submit">Natural
+              Join</button>
+          </div>
+        </div>
+        <div class="row mt-2">
+          <div class="col-sm-2"></div>
+          <div class="col-sm-8">
+            <button id="js-add-join" class="btn btn-success btn-block" data-symbol="A" type="submit">Table
+              A</button>
+          </div>
+        </div>
+        <div class="row mt-2">
+          <div class="col-sm-2"></div>
+          <div class="col-sm-8">
+            <button id="js-add-join" class="btn btn-success btn-block" data-symbol="B" type="submit">Table
+              B</button>
+          </div>
+        </div>
+        <div class="row mt-2">
+          <div class="col-sm-2"></div>
+          <div class="col-sm-8">
+            <button id="js-clear" class="btn btn-danger btn-block" type="submit">Clear</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-sm-7 border m-0 p-0">
+        <canvas id="board" class='img-responsive'></canvas>
+      </div>
+
+      <div class="col-sm-3">
+        <h3 class="text-center">Query Output</h3>
+
+        <div class="text-center">
+          <p class="lead">
+            <pre id="js-output"></pre>
+          </p>
+        </div>
+      </div>
     </div>
+  </div>
 
-    <footer class="footer">
-        <div class="container-fluid text-center">
-            <p class="m-0 p-0">
-                Hosted with <span class="text-danger">♥</span> on <a
-                    href="https://github.com/kartikanand/rax">Github</a>
-            </p>
-            <p class="text-muted m-0 p-0">
-                Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from
-                <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>
-            </p>
-            <div></div>
-        </div>
-    </footer>
+  <footer class="footer">
+    <div class="container-fluid text-center">
+      <p class="m-0 p-0">
+        Hosted with <span class="text-danger">♥</span> on <a href="https://github.com/kartikanand/rax">Github</a>
+      </p>
+      <p class="text-muted m-0 p-0">
+        Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from
+        <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>
+      </p>
+      <div></div>
+    </div>
+  </footer>
 
-    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
-        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
-        crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
-        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
-        crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
-        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
-        crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/3.4.0/fabric.min.js"></script>
-    <script src="static/main.js"></script>
+  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+    integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+    integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/3.4.0/fabric.min.js"></script>
+  <script src="static/main.js"></script>
 </body>
 
 </html>
