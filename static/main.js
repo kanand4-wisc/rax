@@ -54,7 +54,7 @@ function registerCanvasEventHandlers(canvas) {
         strokeWidth: 3,
         selectable: false,
         evented: false,
-        hasControls : false,
+        hasControls: false,
         lockMovementX: true,
         lockMovementY: true,
         lockRotation: true
@@ -219,14 +219,14 @@ function getTextBoxCoords(operator) {
 }
 
 function getTextBox(txt, operator) {
-  const {textLeft, textTop} = getTextBoxCoords(operator);
+  const { textLeft, textTop } = getTextBoxCoords(operator);
 
   const textBox = new fabric.Text(txt,
-  {
-    left: textLeft,
-    top: textTop,
-    fontSize: 20
-  });
+    {
+      left: textLeft,
+      top: textTop,
+      fontSize: 20
+    });
 
   textBox.hasControls = false;
   textBox.hasBorders = false;
@@ -302,7 +302,7 @@ function getOperator(operType) {
       operator.type = 'operator';
       operator.operType = operType != 'A' && operType != 'B' ? operType : 'table';
       operator.tableName = operType != 'A' && operType != 'B' ? null : operType;
-      
+
       operator.inputs = [];
 
       if (operType == 'join') {
@@ -337,7 +337,7 @@ function getOperator(operType) {
         }
 
         if (operator.txt) {
-          const {textLeft, textTop} = getTextBoxCoords(operator);
+          const { textLeft, textTop } = getTextBoxCoords(operator);
           operator.txt.set({
             left: textLeft,
             top: textTop
@@ -354,28 +354,25 @@ function getOperator(operType) {
         if (operator.inputs.length == 0 && operator.operType != 'table') {
           return;
         }
-  
+
         const jsonObj = {};
         const root = getOutputFromOperator(operator, jsonObj);
 
         // add root
         jsonObj['root'] = root;
 
-        fetch("/query", {
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          },
-          method: "POST",
-          body: JSON.stringify(jsonObj)
-        })
-          .then((resp) => resp.json())
-          .then(function (data) {
-            const out = document.getElementById('js-output');
-            //const results = data.res.replace(/\s/g, '&nbsp;');
-             // console.log(results);
-            out.innerText = data.res;
-          })
+        const query = decryptQueryData(jsonObj, root);
+        const data = runQuery(window.db, query);
+
+        const table = new window.AsciiTable('')
+        const columns = data[0].columns;
+        table.setHeading(...columns);
+        for (const row of data[0].values) {
+          table.addRow(...row);
+        }
+
+        const out = document.getElementById('js-output');
+        out.innerText = table;
       });
 
       resolve(operator);
@@ -384,11 +381,14 @@ function getOperator(operType) {
 }
 
 // initialize everything and set event handlers
-window.onload = (ev) => {
+window.onload = async (ev) => {
+  window.db = await initDB();
+  insertSampleData(db);
+
   const canvasId = 'board';
   const canvasDom = document.getElementById(canvasId);
 
-  const  parentWidth = canvasDom.parentNode.offsetWidth;
+  const parentWidth = canvasDom.parentNode.offsetWidth;
   canvasDom.width = parentWidth;
   canvasDom.height = "600";
 
