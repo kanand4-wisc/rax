@@ -6,7 +6,7 @@ def decryptQueryData(data, rootNode):
 
     if operator == "Project":
         inputTable = nodeValue.get("input")
-        colNames = nodeValue.get("colNames")
+        colNames = nodeValue.get("colNames").split(",")
         
         selectCol = ""
         for col in colNames:
