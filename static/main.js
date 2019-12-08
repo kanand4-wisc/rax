@@ -52,8 +52,8 @@ function registerCanvasEventHandlers(canvas) {
         fill: 'black',
         stroke: 'black',
         strokeWidth: 3,
-        selectable: true,
-        evented: true,
+        selectable: false,
+        evented: false,
         hasControls : false,
         lockMovementX: true,
         lockMovementY: true,
@@ -227,6 +227,12 @@ function getTextBox(txt, operator) {
     top: textTop,
     fontSize: 20
   });
+
+  textBox.hasControls = false;
+  textBox.hasBorders = false;
+  textBox.selectable = false;
+  textBox.lockMovementY = true;
+  textBox.lockMovementX = true;
 
   return textBox;
 }
