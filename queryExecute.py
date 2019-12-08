@@ -12,7 +12,7 @@ def prepare_data():
     con = sqlite3.connect(filePath)
     cur = con.cursor()
 
-    A_sql = "CREATE TABLE A (id integer PRIMARY KEY, a integer NOT NULL, b text NOT NULL)"
+    A_sql = "CREATE TABLE A (a_id integer PRIMARY KEY, a integer NOT NULL, b text NOT NULL)"
     cur.execute(A_sql)
 
     insert_data = "INSERT INTO A VALUES (1, 1, 'SF')"
@@ -28,7 +28,7 @@ def prepare_data():
     insert_data = "INSERT INTO A VALUES (6, 7, 'SJ')"
     cur.execute(insert_data)
 
-    B_sql = "CREATE TABLE B (id integer PRIMARY KEY, b text NOT NULL, c integer NOT NULL)"
+    B_sql = "CREATE TABLE B (b_id integer PRIMARY KEY, b text NOT NULL, c integer NOT NULL)"
     cur.execute(B_sql)
 
     insert_data = "INSERT INTO B VALUES (1, 'SF', 5)"

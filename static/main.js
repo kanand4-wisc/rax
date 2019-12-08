@@ -259,7 +259,6 @@ function getOutputFromOperator(operator, jsonObj) {
 
     return key;
   } else if (operator.operType == 'join') {
-    const joinColumn = operator.joinColumn;
     const key = getVarName();
     const input = [
       getOutputFromOperator(operator.inputs[0], jsonObj),
@@ -270,7 +269,6 @@ function getOutputFromOperator(operator, jsonObj) {
     jsonObj[key] = {
       "operator": "Join",
       "input": input,
-      joinColumn
     };
 
     return key;
@@ -302,8 +300,6 @@ function getOperator(operType) {
       operator.inputs = [];
 
       if (operType == 'join') {
-        operator.joinColumn = window.prompt('Enter join column');
-        operator.txt = getTextBox(operator.joinColumn, operator);
         operator.anchors = [getAnchor(operator, 'output'), getAnchor(operator, 'input')];
       } else if (operType == 'sigma') {
         operator.condition = window.prompt('Enter condition');
@@ -370,6 +366,8 @@ function getOperator(operType) {
           .then((resp) => resp.json())
           .then(function (data) {
             const out = document.getElementById('js-output');
+            //const results = data.res.replace(/\s/g, '&nbsp;');
+             // console.log(results);
             out.innerText = data.res;
           })
       });

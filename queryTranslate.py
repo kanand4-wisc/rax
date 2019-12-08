@@ -18,7 +18,7 @@ def decryptQueryData(data, rootNode):
 
     if operator == "Join":
         inputTables = nodeValue.get("input")
-        joinCol = nodeValue.get("joinColumn")
+        #joinCol = nodeValue.get("joinColumn")
         if inputTables[0] in data:
             queryFirstTable = "(" + decryptQueryData(data, inputTables[0]) + ") as " + inputTables[0]
         else:
@@ -29,7 +29,8 @@ def decryptQueryData(data, rootNode):
         else:
             querySecondTable = inputTables[1]
 
-        query = "Select * from " + queryFirstTable + ", " + querySecondTable + " where " + inputTables[0] + "." + joinCol + "==" + inputTables[1] + "." + joinCol
+        query = "Select * from " + queryFirstTable + " Natural JOIN " + querySecondTable;
+        #query = "Select * from " + queryFirstTable + ", " + querySecondTable + " where " + inputTables[0] + "." + joinCol + "==" + inputTables[1] + "." + joinCol
 
     if operator == "Select":
         inputTable = nodeValue.get("input")
