@@ -26,10 +26,12 @@ def root():
 
     headers = list(map(lambda x: x[0], cur.description))
     results = tabulate(list(map(list, results)), headers, tablefmt="psql")
+    cost = len(results)
     #print(list(map(lambda x: x[0], cur.description)))
 
     res = {
-        "res": results
+        "res": results,
+        "cost": cost
     }
     
     return json.dumps(res)
