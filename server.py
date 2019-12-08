@@ -1,4 +1,5 @@
 from flask import Flask, request, render_template
+from tabulate import tabulate
 import sqlite3
 import os
 import json
@@ -23,10 +24,14 @@ def root():
     cur.execute(finalQuery)
     results = cur.fetchall()
 
-    res = {
-        "res": " ".join(map(str, results))
-    }
+    headers = list(map(lambda x: x[0], cur.description))
+    results = tabulate(list(map(list, results)), headers, tablefmt="psql")
+    #print(list(map(lambda x: x[0], cur.description)))
 
+    res = {
+        "res": results
+    }
+    
     return json.dumps(res)
 
 
