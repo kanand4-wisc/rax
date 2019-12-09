@@ -24,7 +24,9 @@ function registerButtonHandlers(canvas) {
 
         // clear query output
         const out = document.getElementById('js-output');
+        const nodeCostOut = document.getElementById('js-cost');
         out.innerText = "";
+        nodeCostOut.innerText = "";
 
         return;
       }
@@ -418,15 +420,31 @@ function getOperator(operType) {
         const query = decryptQueryData(jsonObj, root);
         const data = runQuery(window.db, query);
 
+        let cost = 0;
+
         const table = new window.AsciiTable('')
         const columns = data[0].columns;
         table.setHeading(...columns);
         for (const row of data[0].values) {
           table.addRow(...row);
+
+          // calculate cost of query
+          for (const obj of row) {
+            if (typeof obj == 'string') {
+              cost += obj.length;
+            } else if (typeof obj == 'number') {
+              cost += 8;
+            }
+          }
         }
 
+        const nodeOutput = `Node Output : ${cost} bytes`;
+
         const out = document.getElementById('js-output');
+        const nodeCostOut = document.getElementById('js-cost');
+
         out.innerText = table;
+        nodeCostOut.innerText = nodeOutput;
       });
 
       resolve(operator);
