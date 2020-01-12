@@ -16,7 +16,7 @@ function registerButtonHandlers(canvas) {
 
   for (const btn of symbolButtons) {
     const symbol = btn.dataset.symbol;
-    btn.addEventListener('click', (ev) => {
+    btn.addEventListener('click', async (ev) => {
       ev.preventDefault();
 
       if (symbol == 'clear') {
@@ -37,7 +37,7 @@ function registerButtonHandlers(canvas) {
 
         canvas.clear();
         window.db = null;
-        
+
         // toggle between intro and rax modes
         introDom.classList.remove('hidden');
         raxDom.classList.add('hidden');
@@ -45,9 +45,8 @@ function registerButtonHandlers(canvas) {
         return;
       }
 
-      getOperator(symbol).then((operator) => {
-        addOperator(operator, canvas);
-      });
+      const operator = await getOperator(symbol);
+      addOperator(operator, canvas);
     })
   }
 }
@@ -345,114 +344,116 @@ function getOutputFromOperator(operator, jsonObj) {
   }
 }
 
-function getOperator(operType) {
-  return new Promise((resolve) => {
+async function getOperator(operType) {
+  const operator = await new Promise((resolve) => {
     fabric.loadSVGFromURL(`static/assets/${operType}.svg`, function (objects, options) {
-      operator = fabric.util.groupSVGElements(objects, options);
+      const operator = fabric.util.groupSVGElements(objects, options);
       operator.scale(operType == 'sigma' ? 0.035 : 0.5);
       operator.set({ left: 100, top: 100 });
       operator.hasControls = false;
       operator.hasBorders = false;
-      operator.type = 'operator';
-      operator.operType = operType != 'A' && operType != 'B' ? operType : 'table';
-      operator.tableName = operType != 'A' && operType != 'B' ? null : operType;
-
-      operator.inputs = [];
-
-      if (operType == 'join') {
-        operator.anchors = [getAnchor(operator, 'output'), getAnchor(operator, 'input')];
-      } else if (operType == 'sigma') {
-        operator.condition = window.prompt('Enter condition');
-        operator.txt = getTextBox(operator.condition, operator);
-        operator.anchors = [getAnchor(operator, 'output'), getAnchor(operator, 'input')];
-      } else if (operType == 'project') {
-        operator.colNames = window.prompt('Enter comma separated column names');
-        operator.txt = getTextBox(operator.colNames, operator);
-        operator.anchors = [getAnchor(operator, 'output'), getAnchor(operator, 'input')];
-      } else if (operator.operType == 'table') {
-        operator.txt = getTextBox(operator.tableName, operator);
-        operator.anchors = [getAnchor(operator, 'output')];
-      } else {
-        operator.anchors = [getAnchor(operator, 'output'), getAnchor(operator, 'input')];
-      }
-
-      // move anchors along with the operator
-      operator.on('moving', (ev) => {
-        const operator = ev.target;
-
-        for (const anchor of operator.anchors) {
-          const { anchorLeft, anchorTop } = getAnchorCoords(operator, anchor.dir);
-
-          anchor.set({
-            top: anchorTop,
-            left: anchorLeft
-          });
-
-          anchor.setCoords();
-          updateAnchorLines(anchor);
-        }
-
-        if (operator.txt) {
-          const { textLeft, textTop } = getTextBoxCoords(operator);
-          operator.txt.set({
-            left: textLeft,
-            top: textTop
-          });
-
-          operator.txt.setCoords();
-        }
-      });
-
-      operator.on('mousedblclick', (ev) => {
-        const operator = ev.target;
-
-        // return if nothing is connected
-        if (operator.inputs.length == 0 && operator.operType != 'table') {
-          return;
-        }
-
-        const jsonObj = {};
-        const root = getOutputFromOperator(operator, jsonObj);
-
-        // add root
-        jsonObj['root'] = root;
-
-        const query = decryptQueryData(jsonObj, root);
-        const data = runQuery(window.db, query);
-
-        let cost = 0;
-
-        const table = new window.AsciiTable('')
-        const columns = data[0].columns;
-        table.setHeading(...columns);
-        for (const row of data[0].values) {
-          table.addRow(...row);
-
-          // calculate cost of query
-          for (const obj of row) {
-            if (typeof obj == 'string') {
-              cost += obj.length;
-            } else if (typeof obj == 'number') {
-              cost += 8;
-            }
-          }
-        }
-
-        const nodeOutput = `Node Output : ${cost} bytes`;
-
-        const out = document.getElementById('js-output');
-        const nodeCostOut = document.getElementById('js-cost');
-
-        out.innerText = table;
-        nodeCostOut.innerText = nodeOutput;
-      });
 
       resolve(operator);
     });
   });
+
+  operator.type = 'operator';
+  operator.operType = operType != 'A' && operType != 'B' ? operType : 'table';
+  operator.tableName = operType != 'A' && operType != 'B' ? null : operType;
+  operator.inputs = [];
+
+  if (operType == 'join') {
+    operator.anchors = [getAnchor(operator, 'output'), getAnchor(operator, 'input')];
+  } else if (operType == 'sigma') {
+    operator.condition = window.prompt('Enter condition');
+    operator.txt = getTextBox(operator.condition, operator);
+    operator.anchors = [getAnchor(operator, 'output'), getAnchor(operator, 'input')];
+  } else if (operType == 'project') {
+    operator.colNames = window.prompt('Enter comma separated column names');
+    operator.txt = getTextBox(operator.colNames, operator);
+    operator.anchors = [getAnchor(operator, 'output'), getAnchor(operator, 'input')];
+  } else if (operator.operType == 'table') {
+    operator.txt = getTextBox(operator.tableName, operator);
+    operator.anchors = [getAnchor(operator, 'output')];
+  } else {
+    operator.anchors = [getAnchor(operator, 'output'), getAnchor(operator, 'input')];
+  }
+
+  // move anchors along with the operator
+  operator.on('moving', (ev) => {
+    const operator = ev.target;
+
+    for (const anchor of operator.anchors) {
+      const { anchorLeft, anchorTop } = getAnchorCoords(operator, anchor.dir);
+
+      anchor.set({
+        top: anchorTop,
+        left: anchorLeft
+      });
+
+      anchor.setCoords();
+      updateAnchorLines(anchor);
+    }
+
+    if (operator.txt) {
+      const { textLeft, textTop } = getTextBoxCoords(operator);
+      operator.txt.set({
+        left: textLeft,
+        top: textTop
+      });
+
+      operator.txt.setCoords();
+    }
+  });
+
+  operator.on('mousedblclick', (ev) => {
+    const operator = ev.target;
+
+    // return if nothing is connected
+    if (operator.inputs.length == 0 && operator.operType != 'table') {
+      return;
+    }
+
+    const jsonObj = {};
+    const root = getOutputFromOperator(operator, jsonObj);
+
+    // add root
+    jsonObj['root'] = root;
+
+    const query = decryptQueryData(jsonObj, root);
+    const data = runQuery(window.db, query);
+
+    let cost = 0;
+
+    const table = new window.AsciiTable('')
+    const columns = data[0].columns;
+    table.setHeading(...columns);
+    for (const row of data[0].values) {
+      table.addRow(...row);
+
+      // calculate cost of query
+      for (const obj of row) {
+        if (typeof obj == 'string') {
+          cost += obj.length;
+        } else if (typeof obj == 'number') {
+          cost += 8;
+        }
+      }
+    }
+
+    const nodeOutput = `Node Output : ${cost} bytes`;
+
+    const out = document.getElementById('js-output');
+    const nodeCostOut = document.getElementById('js-cost');
+
+    out.innerText = table;
+    nodeCostOut.innerText = nodeOutput;
+  });
+
+  return operator;
 }
 
-function initCanvas () {
+function initCanvas() {
   const canvasId = 'board';
   const canvasDom = document.getElementById(canvasId);
 
@@ -473,13 +474,13 @@ function initCanvas () {
   registerButtonHandlers(canvas);
 }
 
-async function loadSample () {
+async function loadSample() {
   window.db = await initDB();
   insertSampleData(db);
 }
 
 // initialize everything and set event handlers
-window.onload = async (ev) => {  
+window.onload = async (ev) => {
   const loadSampleButton = document.getElementById('js-loadsample');
   loadSampleButton.addEventListener('click', async (ev) => {
     ev.preventDefault();
