@@ -22,11 +22,15 @@ function registerButtonHandlers(canvas) {
       if (symbol == 'delete') {
 
         const activeObject = canvas.getActiveObject();
-        if (!activeObject.type || activeObject.type != 'line') {
+        if (!activeObject.type || (activeObject.type != 'line' && activeObject.type != 'operator')) {
           return;
         }
 
-        deleteConnectorLine(activeObject, canvas);
+        if (activeObject.type == 'line') {
+          deleteConnectorLine(activeObject, canvas);
+        } else {
+          deleteOperator(activeObject, canvas);
+        }
 
         return;
       }
@@ -172,6 +176,28 @@ function registerCanvasEventHandlers(canvas) {
     canvas.renderAll();
     resetConnector();
   });
+}
+
+function deleteOperator(operator, canvas) {
+  const anchors = operator.anchors;
+
+  for (const anchor of anchors) {
+    for (const line of anchor.lineInputs) {
+      deleteConnectorLine(line, canvas);
+    }
+
+    for (const line of anchor.lineOutputs) {
+      deleteConnectorLine(line, canvas);
+    }
+
+    canvas.remove(anchor);
+  }
+
+  if (operator.txt) {
+    canvas.remove(operator.txt);
+  }
+
+  canvas.remove(operator);
 }
 
 function deleteConnectorLine(line, canvas) {
@@ -410,7 +436,7 @@ async function getOperator(operType) {
       operator.scale(operType == 'sigma' ? 0.035 : 0.5);
       operator.set({ left: 100, top: 100 });
       operator.hasControls = false;
-      operator.hasBorders = false;
+      operator.hasBorders = true;
 
       resolve(operator);
     });
