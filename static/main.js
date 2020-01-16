@@ -141,36 +141,51 @@ function registerCanvasEventHandlers(canvas) {
       || startAnchor.dir == anchor.dir) {
       canvas.remove(connectorLine);
     } else {
-      endPoint = anchor.getCenterPoint();
-      connectorLine.set({
-        x2: endPoint.x,
-        y2: endPoint.y
-      });
-
-      // add line to respective anchors for updating coordinates when moving
-      anchor.lineInputs.push(connectorLine);
-      startAnchor.lineOutputs.push(connectorLine);
-
-      connectorLine.startAnchor = startAnchor;
-      connectorLine.endAnchor = anchor;
-
-      // update input/output for operators
+      let lineCreated = false;
       if (anchor.dir == "input") {
-        anchor.operator.inputs.push(startAnchor.operator);
-
-        // update line data structure
-        connectorLine.inputOperator = startAnchor.operator;
-        connectorLine.outputOperator = anchor.operator;
+        if (anchor.operator.inputs.length == anchor.operator.maxInputs) {
+          canvas.remove(connectorLine);
+        } else {
+          anchor.operator.inputs.push(startAnchor.operator);
+          lineCreated = true;
+        }
       } else {
-        startAnchor.operator.inputs.push(anchor.operator);
-
-        // update line data structure
-        connectorLine.inputOperator = anchor.operator;
-        connectorLine.outputOperator = startAnchor.operator;
+        if (startAnchor.operator.inputs.length == startAnchor.operator.maxInputs) {
+          canvas.remove(connectorLine);
+        } else {
+          startAnchor.operator.inputs.push(anchor.operator);
+          lineCreated = true;
+        }
       }
 
-      connectorLine.setCoords();
-      connectorLine.sendToBack();
+      if (lineCreated) {
+        endPoint = anchor.getCenterPoint();
+        connectorLine.set({
+          x2: endPoint.x,
+          y2: endPoint.y
+        });
+
+        // add line to respective anchors for updating coordinates when moving
+        anchor.lineInputs.push(connectorLine);
+        startAnchor.lineOutputs.push(connectorLine);
+
+        connectorLine.startAnchor = startAnchor;
+        connectorLine.endAnchor = anchor;
+
+        // update input/output for operators
+        if (anchor.dir == "input") {
+          // update line data structure
+          connectorLine.inputOperator = startAnchor.operator;
+          connectorLine.outputOperator = anchor.operator;
+        } else {
+          // update line data structure
+          connectorLine.inputOperator = anchor.operator;
+          connectorLine.outputOperator = startAnchor.operator;
+        }
+
+        connectorLine.setCoords();
+        connectorLine.sendToBack();
+      }
     }
 
     canvas.renderAll();
@@ -449,19 +464,23 @@ async function getOperator(operType) {
 
   if (operType == 'join') {
     operator.anchors = [getAnchor(operator, 'output'), getAnchor(operator, 'input')];
+    operator.maxInputs = 2;
   } else if (operType == 'sigma') {
     operator.condition = window.prompt('Enter condition');
     operator.txt = getTextBox(operator.condition, operator);
     operator.anchors = [getAnchor(operator, 'output'), getAnchor(operator, 'input')];
+    operator.maxInputs = 1;
   } else if (operType == 'project') {
     operator.colNames = window.prompt('Enter comma separated column names');
     operator.txt = getTextBox(operator.colNames, operator);
     operator.anchors = [getAnchor(operator, 'output'), getAnchor(operator, 'input')];
+    operator.maxInputs = 1;
   } else if (operator.operType == 'table') {
     operator.txt = getTextBox(operator.tableName, operator);
     operator.anchors = [getAnchor(operator, 'output')];
   } else {
     operator.anchors = [getAnchor(operator, 'output'), getAnchor(operator, 'input')];
+    operator.maxInputs = 2;
   }
 
   // move anchors along with the operator
