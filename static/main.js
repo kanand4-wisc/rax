@@ -19,6 +19,18 @@ function registerButtonHandlers(canvas) {
     btn.addEventListener('click', async (ev) => {
       ev.preventDefault();
 
+      if (symbol == 'delete') {
+
+        const activeObject = canvas.getActiveObject();
+        if (!activeObject.type || activeObject.type != 'line') {
+          return;
+        }
+
+        deleteConnectorLine(activeObject, canvas);
+
+        return;
+      }
+
       if (symbol == 'clear') {
         canvas.clear();
 
@@ -77,13 +89,15 @@ function registerCanvasEventHandlers(canvas) {
         fill: 'black',
         stroke: 'black',
         strokeWidth: 3,
-        selectable: false,
-        evented: false,
+        selectable: true,
+        evented: true,
         hasControls: false,
         lockMovementX: true,
         lockMovementY: true,
         lockRotation: true
       });
+
+      connectorLine.type = 'line';
 
       canvas.add(connectorLine);
     }
@@ -129,24 +143,69 @@ function registerCanvasEventHandlers(canvas) {
         y2: endPoint.y
       });
 
-      connectorLine.setCoords();
-      connectorLine.sendToBack();
-
       // add line to respective anchors for updating coordinates when moving
       anchor.lineInputs.push(connectorLine);
       startAnchor.lineOutputs.push(connectorLine);
 
+      connectorLine.startAnchor = startAnchor;
+      connectorLine.endAnchor = anchor;
+
       // update input/output for operators
       if (anchor.dir == "input") {
         anchor.operator.inputs.push(startAnchor.operator);
+
+        // update line data structure
+        connectorLine.inputOperator = startAnchor.operator;
+        connectorLine.outputOperator = anchor.operator;
       } else {
         startAnchor.operator.inputs.push(anchor.operator);
+
+        // update line data structure
+        connectorLine.inputOperator = anchor.operator;
+        connectorLine.outputOperator = startAnchor.operator;
       }
+
+      connectorLine.setCoords();
+      connectorLine.sendToBack();
     }
 
     canvas.renderAll();
     resetConnector();
   });
+}
+
+function deleteConnectorLine(line, canvas) {
+  const startAnchor = line.startAnchor;
+  const endAnchor = line.endAnchor;
+  const inputOperator = line.inputOperator;
+  const outputOperator = line.outputOperator;
+
+  let i = 0;
+  for (i = 0; i < startAnchor.lineOutputs.length; ++i) {
+    if (startAnchor.lineOutputs[i] == line) {
+      break;
+    }
+  }
+
+  startAnchor.lineOutputs.splice(i, 1);
+
+  for (i = 0; i < endAnchor.lineInputs.length; ++i) {
+    if (endAnchor.lineInputs[i] == line) {
+      break;
+    }
+  }
+
+  endAnchor.lineInputs.splice(i, 1);
+
+  for (i = 0; i < outputOperator.inputs.length; ++i) {
+    if (outputOperator.inputs[i] == inputOperator) {
+      break;
+    }
+  }
+
+  outputOperator.inputs.splice(i, 1);
+
+  canvas.remove(line);
 }
 
 function addOperator(operator, canvas) {
