@@ -31,100 +31,99 @@
 </head>
 
 <body>
-  <div id="js-intro" class="container-fluid">
+  <div class="container-fluid">
     <div class="row mt-3">
-      <div class="col-sm-12 text-center">
-        <img src="static/assets/dino.png" class="img-responsive text-center" alt="">
-        <h1 class="">T-RaX</h1>
-        <h5 class="text-muted">An interactive tool for exploring Relational Algebra</h5>
-        <div class="row mt-3 text-center">
-          <div class="col-sm-4"></div>
-          <div class="col-sm-4">
-            <button id="js-newproject" class="btn btn-primary btn-lg" data-symbol="project" type="submit">New
-              Project</button>
-          </div>
-        </div>
-        <div class="row mt-3">
-          <div class="col-sm-4"></div>
-          <div class="col-sm-4">
-            <button id="js-loadsample" class="btn btn-primary btn-lg" data-symbol="project" type="submit">Load
-              Sample</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div id="js-rax" class="container-fluid hidden">
-    <div class="row mt-3">
-      <div class="col-sm-2 js-buttons">
+      <div class="col-sm-2">
         <div class="row">
           <div class="col-sm-12 text-center">
             <img src="static/assets/dino.png" class="img-responsive text-center" alt="">
             <h1 class="">T-RaX</h1>
+            <h5 class="text-muted">An interactive tool for exploring Relational Algebra</h5>
           </div>
         </div>
-        <div class="row mt-2">
-          <div class="col-sm-2"></div>
-          <div class="col-sm-8">
-            <button class="btn btn-success btn-block" data-symbol="sigma" type="submit">Select</button>
+        <div id="js-rax" class="js-buttons">
+          <div class="row mt-2">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-8">
+              <button class="btn btn-primary btn-block" data-type="load" data-db-type="sql" type="submit">Write
+                SQL</button>
+            </div>
           </div>
-        </div>
-        <div class="row mt-2">
-          <div class="col-sm-2"></div>
-          <div class="col-sm-8">
-            <button class="btn btn-success btn-block" data-symbol="project" type="submit">Project</button>
+          <div class="row mt-2">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-8">
+              <button class="btn btn-primary btn-block" data-type="load" data-db-type="sqlite" type="submit">Load SQLite
+                DB</button>
+            </div>
           </div>
-        </div>
-        <div class="row mt-2">
-          <div class="col-sm-2"></div>
-          <div class="col-sm-8">
-            <button class="btn btn-success btn-block" data-symbol="union" type="submit">Union</button>
+          <div class="row mt-2">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-8">
+              <button class="btn btn-primary btn-block" data-type="load" data-db-type="sample" type="submit">Load Sample
+                DB</button>
+            </div>
           </div>
-        </div>
-        <div class="row mt-2">
-          <div class="col-sm-2"></div>
-          <div class="col-sm-8">
-            <button class="btn btn-success btn-block" data-symbol="intersect" type="submit">Intersect</button>
+          <div class="row mt-2">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-8">
+              <button class="btn btn-success btn-block" data-type="operator" data-operatorType="sigma"
+                type="submit">Select</button>
+            </div>
           </div>
-        </div>
-        <div class="row mt-2">
-          <div class="col-sm-2"></div>
-          <div class="col-sm-8">
-            <button class="btn btn-success btn-block" data-symbol="join" type="submit">Natural
-              Join</button>
+          <div class="row mt-2">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-8">
+              <button class="btn btn-success btn-block" data-type="operator" data-operatorType="project"
+                type="submit">Project</button>
+            </div>
           </div>
-        </div>
-        <div class="row mt-2">
-          <div class="col-sm-2"></div>
-          <div class="col-sm-8">
-            <button class="btn btn-success btn-block" data-symbol="A" type="submit">Table
-              A</button>
+          <div class="row mt-2">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-8">
+              <button class="btn btn-success btn-block" data-type="operator" data-operatorType="union"
+                type="submit">Union</button>
+            </div>
           </div>
-        </div>
-        <div class="row mt-2">
-          <div class="col-sm-2"></div>
-          <div class="col-sm-8">
-            <button class="btn btn-success btn-block" data-symbol="B" type="submit">Table
-              B</button>
+          <div class="row mt-2">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-8">
+              <button class="btn btn-success btn-block" data-type="operator" data-operatorType="intersect"
+                type="submit">Intersect</button>
+            </div>
           </div>
-        </div>
-        <div class="row mt-2">
-          <div class="col-sm-2"></div>
-          <div class="col-sm-8">
-            <button class="btn btn-danger btn-block" data-symbol="delete" type="submit">Delete</button>
+          <div class="row mt-2">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-8">
+              <button class="btn btn-success btn-block" data-type="operator" data-operatorType="join"
+                type="submit">Natural
+                Join</button>
+            </div>
           </div>
-        </div>
-        <div class="row mt-2">
-          <div class="col-sm-2"></div>
-          <div class="col-sm-8">
-            <button class="btn btn-danger btn-block" data-symbol="clear" type="submit">Clear</button>
+          <div class="row mt-2">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-8">
+              <button class="btn btn-success btn-block" data-type="table" data-tableName="A" type="submit">Table
+                A</button>
+            </div>
           </div>
-        </div>
-        <div class="row mt-2">
-          <div class="col-sm-2"></div>
-          <div class="col-sm-8">
-            <button class="btn btn-warning btn-block" data-symbol="back" type="submit">Back</button>
+          <div class="row mt-2">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-8">
+              <button class="btn btn-success btn-block" data-type="table" data-tableName="B" type="submit">Table
+                B</button>
+            </div>
+          </div>
+          <div class="row mt-2">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-8">
+              <button class="btn btn-danger btn-block" data-type="delete" type="submit">Delete</button>
+            </div>
+          </div>
+          <div class="row mt-2">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-8">
+              <button class="btn btn-danger btn-block" data-type="clear" type="submit">Clear</button>
+            </div>
           </div>
         </div>
       </div>
