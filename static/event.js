@@ -147,7 +147,6 @@ function registerButtonHandlers(canvas) {
       switch (buttonType) {
         case 'operator':
           const operatorType = btn.dataset.operatorType;
-          console.log(operatorType);
           const kls = {
             'sigma': Sigma,
             'project': Project,
