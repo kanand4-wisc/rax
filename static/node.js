@@ -1,275 +1,378 @@
 async function getAsset(name, scale) {
-    const assetURL = `static/assets/${name}.svg`;
+  const assetURL = `static/assets/${name}.svg`;
 
-    const asset = await new Promise((resolve) => {
-        fabric.loadSVGFromURL(assetURL, (objects, options) => {
-            const asset = fabric.util.groupSVGElements(objects, options);
-            asset.scale(scale);
-            asset.hasControls = false;
-            asset.hasBorders = false;
+  const asset = await new Promise((resolve) => {
+    fabric.loadSVGFromURL(assetURL, (objects, options) => {
+      const asset = fabric.util.groupSVGElements(objects, options);
+      asset.scale(scale);
+      asset.hasControls = false;
+      asset.hasBorders = false;
 
-            resolve(asset);
-        });
+      resolve(asset);
     });
+  });
 
-    return asset;
+  return asset;
 }
 
+const getVarName = (() => {
+  let counter = 1;
+
+  return () => {
+    const varName = `x${counter}`;
+    counter++;
+
+    return varName;
+  }
+})();
+
 class Line extends fabric.Line {
-    constructor(points) {
-        super(points, {
-            fill: 'black',
-            stroke: 'black',
-            strokeWidth: 3,
-            selectable: true,
-            evented: true,
-            hasControls: false,
-            lockMovementX: true,
-            lockMovementY: true,
-            lockRotation: true
-        });
-    }
+  constructor(points) {
+    super(points, {
+      fill: 'black',
+      stroke: 'black',
+      strokeWidth: 3,
+      selectable: true,
+      evented: true,
+      hasControls: false,
+      lockMovementX: true,
+      lockMovementY: true,
+      lockRotation: true
+    });
+  }
 }
 
 class Anchor extends fabric.Circle {
-    constructor({ radius, fill, left, top, direction }) {
-        super({
-            radius,
-            fill,
-            left,
-            top,
-            originX: 'center',
-            originY: 'center'
-        });
+  constructor({ radius, fill, left, top, direction }) {
+    super({
+      radius,
+      fill,
+      left,
+      top,
+      originX: 'center',
+      originY: 'center'
+    });
 
-        this.direction = direction;
-        this.lineInputs = [];
-        this.lineOutputs = [];
-    };
+    this.direction = direction;
+    this.lineInputs = [];
+    this.lineOutputs = [];
+  };
 }
 
 function getAnchor({ nodeCenterPoint, assetRadius, direction }) {
-    const margin = 5;
-    const radius = 5;
-    const fill = '#ffc4c4';
-    const left = nodeCenterPoint.x;
-    const top = direction === 'input' ?
-        nodeCenterPoint.y + assetRadius + margin + radius :
-        nodeCenterPoint.y - assetRadius - margin - radius;
+  const margin = 5;
+  const radius = 5;
+  const fill = '#ffc4c4';
+  const left = nodeCenterPoint.x;
+  const top = direction === 'input' ?
+    nodeCenterPoint.y + assetRadius + margin + radius :
+    nodeCenterPoint.y - assetRadius - margin - radius;
 
-    const anchor = new Anchor({
-        radius,
-        fill,
-        left,
-        top,
-        direction
-    });
+  const anchor = new Anchor({
+    radius,
+    fill,
+    left,
+    top,
+    direction
+  });
 
-    return anchor;
+  return anchor;
 }
 
 function getTextBox({ text, nodeCenterPoint, assetRadius }) {
-    const margin = 5;
-    const fontSize = 20;
-    const left = nodeCenterPoint.x + assetRadius + margin;
-    const top = nodeCenterPoint.y;
+  const margin = 5;
+  const fontSize = 20;
+  const left = nodeCenterPoint.x + assetRadius + margin;
+  const top = nodeCenterPoint.y;
 
-    const textBox = new fabric.Text(text, {
-        fontSize,
-        left,
-        top,
-        originY: 'center'
-    });
+  const textBox = new fabric.Text(text, {
+    fontSize,
+    left,
+    top,
+    originY: 'center'
+  });
 
-    return textBox;
+  return textBox;
 }
 
 class Node extends fabric.Group {
-    async init() {
-        const asset = await getAsset(this.assetName, this.assetScale);
-        asset.set({
-            left: this.getCenterPoint().x,
-            top: this.getCenterPoint().y,
-            originX: 'center',
-            originY: 'center'
-        });
-        this.addWithUpdate(asset);
+  constructor({ assetName, assetScale, text, hasInput, hasOutput }) {
+    // initialize empty group
+    super([], {
+      left: 100,
+      top: 100,
+      hasControls: false,
+      hasBorders: true,
+      selectable: true,
+      subTargetCheck: true
+    });
 
-        const assetRadius = asset.getBoundingRect().height / 2;
+    this.assetName = assetName;
+    this.assetScale = assetScale;
+    this.text = text;
+    this.anchors = [];
+    this.hasInput = hasInput;
+    this.hasOutput = hasOutput;
 
-        // we want to center everything around the asset
-        // so calculate and save it right now
-        const nodeCenterPoint = this.getCenterPoint();
+    this.on('moving', () => this.onMoveHandler());
+  }
 
-        if (this.hasInput) {
-            const inputAnchor = getAnchor({
-                nodeCenterPoint,
-                assetRadius,
-                direction: 'input'
-            });
+  async init() {
+    const asset = await getAsset(this.assetName, this.assetScale);
+    asset.set({
+      left: this.getCenterPoint().x,
+      top: this.getCenterPoint().y,
+      originX: 'center',
+      originY: 'center'
+    });
+    this.addWithUpdate(asset);
 
-            this.addWithUpdate(inputAnchor);
-            this.anchors.push(inputAnchor);
-        }
+    const assetRadius = asset.getBoundingRect().height / 2;
 
-        if (this.hasOutput) {
-            const outputAnchor = getAnchor({
-                nodeCenterPoint,
-                assetRadius,
-                direction: 'output'
-            });
+    // we want to center everything around the asset
+    // so calculate and save it right now
+    const nodeCenterPoint = this.getCenterPoint();
 
-            this.addWithUpdate(outputAnchor);
-            this.anchors.push(outputAnchor);
-        }
+    if (this.hasInput) {
+      const inputAnchor = getAnchor({
+        nodeCenterPoint,
+        assetRadius,
+        direction: 'input'
+      });
 
-        if (this.text) {
-            const textBox = getTextBox({
-                text: this.text,
-                nodeCenterPoint,
-                assetRadius
-            });
-
-            this.addWithUpdate(textBox);
-        }
+      this.addWithUpdate(inputAnchor);
+      this.anchors.push(inputAnchor);
     }
 
-    onMoveHandler() {
-        for (const anchor of this.anchors) {
-            const x = anchor.getCenterPoint().x + anchor.group.getCenterPoint().x;
-            const y = anchor.getCenterPoint().y + anchor.group.getCenterPoint().y;
+    if (this.hasOutput) {
+      const outputAnchor = getAnchor({
+        nodeCenterPoint,
+        assetRadius,
+        direction: 'output'
+      });
 
-            for (const line of anchor.lineInputs) {
-                line.set({
-                    x2: x,
-                    y2: y
-                });
-
-                line.setCoords();
-            }
-
-            for (const line of anchor.lineOutputs) {
-                line.set({
-                    x1: x,
-                    y1: y
-                });
-
-                line.setCoords();
-            }
-        }
+      this.addWithUpdate(outputAnchor);
+      this.anchors.push(outputAnchor);
     }
 
-    constructor({ assetName, assetScale, text, hasInput, hasOutput }) {
-        // initialize empty group
-        super([], {
-            left: 100,
-            top: 100,
-            hasControls: false,
-            hasBorders: false,
-            selectable: true,
-            subTargetCheck: true
+    if (this.text) {
+      const textBox = getTextBox({
+        text: this.text,
+        nodeCenterPoint,
+        assetRadius
+      });
+
+      this.addWithUpdate(textBox);
+    }
+  }
+
+  onMoveHandler() {
+    for (const anchor of this.anchors) {
+      const x = anchor.getCenterPoint().x + anchor.group.getCenterPoint().x;
+      const y = anchor.getCenterPoint().y + anchor.group.getCenterPoint().y;
+
+      for (const line of anchor.lineInputs) {
+        line.set({
+          x2: x,
+          y2: y
         });
 
-        this.assetName = assetName;
-        this.assetScale = assetScale;
-        this.text = text;
-        this.anchors = [];
-        this.hasInput = hasInput;
-        this.hasOutput = hasOutput;
+        line.setCoords();
+      }
 
-        this.on('moving', () => this.onMoveHandler());
+      for (const line of anchor.lineOutputs) {
+        line.set({
+          x1: x,
+          y1: y
+        });
+
+        line.setCoords();
+      }
     }
+  }
+
+  getOutput(jsonObj) {
+    throw new Error('Not Implemented');
+  }
 }
 
 class Table extends Node {
-    constructor({ tableName }) {
-        super({
-            assetName: tableName,
-            text: tableName,
-            hasInput: false,
-            hasOutput: true,
-            assetScale: 0.5
-        });
-    }
+  constructor({ tableName }) {
+    super({
+      assetName: tableName,
+      text: tableName,
+      hasInput: false,
+      hasOutput: true,
+      assetScale: 0.5
+    });
+
+    this.tableName = tableName;
+  }
+
+  getOutput(jsonObj) {
+    const key = getVarName();
+
+    jsonObj[key] = {
+      operator: 'Table',
+      input: this.tableName,
+    };
+
+    return key;
+  }
 }
 
 class Operator extends Node {
-    constructor({ operatorName, assetScale, operatorText }) {
-        super({
-            assetName: operatorName,
-            text: operatorText,
-            hasInput: true,
-            hasOutput: true,
-            assetScale
-        });
+  constructor({ operatorName, assetScale, operatorText }) {
+    super({
+      assetName: operatorName,
+      text: operatorText,
+      hasInput: true,
+      hasOutput: true,
+      assetScale
+    });
 
-        this.inputs = [];
-    }
+    this.inputs = [];
+  }
 }
 
 class Sigma extends Operator {
-    constructor() {
-        const operatorName = 'sigma';
-        const assetScale = 0.030;
-        const condition = 'a > 3';
+  constructor() {
+    const operatorName = 'sigma';
+    const assetScale = 0.030;
+    const condition = window.prompt('Enter condition');
 
-        super({
-            operatorName,
-            assetScale,
-            operatorText: condition
-        });
-    }
+    super({
+      operatorName,
+      assetScale,
+      operatorText: condition
+    });
+
+    this.condition = condition;
+  }
+
+  getOutput(jsonObj) {
+    const key = getVarName();
+    const input = this.inputs[0].getOutput(jsonObj);
+
+    jsonObj[key] = {
+      operator: 'Select',
+      input,
+      condition: this.condition
+    };
+
+    return key;
+  }
 }
 
 class Project extends Operator {
-    constructor() {
-        const operatorName = 'project';
-        const assetScale = 0.5;
-        const colNames = window.prompt('Enter comma separated column names');
+  constructor() {
+    const operatorName = 'project';
+    const assetScale = 0.5;
+    const colNames = window.prompt('Enter comma separated column names');
 
-        super({
-            operatorName,
-            assetScale,
-            operatorText: colNames
-        });
-    }
+    super({
+      operatorName,
+      assetScale,
+      operatorText: colNames
+    });
+
+    this.colNames = colNames;
+  }
+
+  getOutput(jsonObj) {
+    const key = getVarName();
+    const input = this.inputs[0].getOutput(jsonObj);
+
+    jsonObj[key] = {
+      operator: 'Project',
+      input,
+      colNames: this.colNames
+    };
+
+    return key;
+  }
 }
 
 class Join extends Operator {
-    constructor() {
-        const operatorName = 'join';
-        const assetScale = 0.5;
+  constructor() {
+    const operatorName = 'join';
+    const assetScale = 0.5;
 
-        super({
-            operatorName,
-            assetScale,
-            operatorText: null
-        });
-    }
+    super({
+      operatorName,
+      assetScale,
+      operatorText: null
+    });
+  }
+
+  getOutput(jsonObj) {
+    const key = getVarName();
+    const input = [
+      this.inputs[0].getOutput(jsonObj),
+      this.inputs[1].getOutput(jsonObj)
+    ];
+
+    jsonObj[key] = {
+      operator: 'Join',
+      input
+    };
+
+    return key;
+  }
 }
 
 class Union extends Operator {
-    constructor() {
-        const operatorName = 'union';
-        const assetScale = 0.5;
+  constructor() {
+    const operatorName = 'union';
+    const assetScale = 0.5;
 
-        super({
-            operatorName,
-            assetScale,
-            operatorText: null
-        });
-    }
+    super({
+      operatorName,
+      assetScale,
+      operatorText: null
+    });
+  }
+
+  getOutput(jsonObj) {
+    const key = getVarName();
+    const input = [
+      this.inputs[0].getOutput(jsonObj),
+      this.inputs[1].getOutput(jsonObj)
+    ];
+
+    jsonObj[key] = {
+      operator: 'Union',
+      input
+    };
+
+    return key;
+  }
 }
 
 class Intersect extends Operator {
-    constructor() {
-        const operatorName = 'intersect';
-        const assetScale = 0.5;
+  constructor() {
+    const operatorName = 'intersect';
+    const assetScale = 0.5;
 
-        super({
-            operatorName,
-            assetScale,
-            operatorText: null
-        });
-    }
+    super({
+      operatorName,
+      assetScale,
+      operatorText: null
+    });
+  }
+
+  getOutput(jsonObj) {
+    const key = getVarName();
+    const input = [
+      this.inputs[0].getOutput(jsonObj),
+      this.inputs[1].getOutput(jsonObj)
+    ];
+
+    jsonObj[key] = {
+      operator: 'Intersect',
+      input
+    };
+
+    return key;
+  }
 }

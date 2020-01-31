@@ -6,24 +6,6 @@
   <link rel="stylesheet" href="static/bootstrap.min.css">
 
   <style>
-    html {
-      position: relative;
-      min-height: 100%;
-    }
-
-    body {
-      margin-bottom: 60px;
-      /* Margin bottom by footer height */
-    }
-
-    .footer {
-      position: absolute;
-      bottom: 0;
-      width: 100%;
-      height: 60px;
-      line-height: 30px;
-    }
-
     .hidden {
       display: none;
     }
@@ -41,7 +23,7 @@
             <h5 class="text-muted">An interactive tool for exploring Relational Algebra</h5>
           </div>
         </div>
-        <div id="js-rax" class="js-buttons">
+        <div class="js-buttons">
           <div class="row mt-2">
             <div class="col-sm-2"></div>
             <div class="col-sm-8">
@@ -66,35 +48,35 @@
           <div class="row mt-2">
             <div class="col-sm-2"></div>
             <div class="col-sm-8">
-              <button class="btn btn-success btn-block" data-type="operator" data-operatorType="sigma"
+              <button class="btn btn-success btn-block" data-type="operator" data-operator-type="sigma"
                 type="submit">Select</button>
             </div>
           </div>
           <div class="row mt-2">
             <div class="col-sm-2"></div>
             <div class="col-sm-8">
-              <button class="btn btn-success btn-block" data-type="operator" data-operatorType="project"
+              <button class="btn btn-success btn-block" data-type="operator" data-operator-type="project"
                 type="submit">Project</button>
             </div>
           </div>
           <div class="row mt-2">
             <div class="col-sm-2"></div>
             <div class="col-sm-8">
-              <button class="btn btn-success btn-block" data-type="operator" data-operatorType="union"
+              <button class="btn btn-success btn-block" data-type="operator" data-operator-type="union"
                 type="submit">Union</button>
             </div>
           </div>
           <div class="row mt-2">
             <div class="col-sm-2"></div>
             <div class="col-sm-8">
-              <button class="btn btn-success btn-block" data-type="operator" data-operatorType="intersect"
+              <button class="btn btn-success btn-block" data-type="operator" data-operator-type="intersect"
                 type="submit">Intersect</button>
             </div>
           </div>
           <div class="row mt-2">
             <div class="col-sm-2"></div>
             <div class="col-sm-8">
-              <button class="btn btn-success btn-block" data-type="operator" data-operatorType="join"
+              <button class="btn btn-success btn-block" data-type="operator" data-operator-type="join"
                 type="submit">Natural
                 Join</button>
             </div>
@@ -102,27 +84,33 @@
           <div class="row mt-2">
             <div class="col-sm-2"></div>
             <div class="col-sm-8">
-              <button class="btn btn-success btn-block" data-type="table" data-tableName="A" type="submit">Table
+              <button class="btn btn-success btn-block" data-type="table" data-table-name="A" type="submit">Table
                 A</button>
             </div>
           </div>
           <div class="row mt-2">
             <div class="col-sm-2"></div>
             <div class="col-sm-8">
-              <button class="btn btn-success btn-block" data-type="table" data-tableName="B" type="submit">Table
+              <button class="btn btn-success btn-block" data-type="table" data-table-name="B" type="submit">Table
                 B</button>
             </div>
           </div>
           <div class="row mt-2">
             <div class="col-sm-2"></div>
             <div class="col-sm-8">
-              <button class="btn btn-danger btn-block" data-type="delete" type="submit">Delete</button>
+              <button class="btn btn-secondary btn-block" data-type="run" type="submit">Run</button>
             </div>
           </div>
           <div class="row mt-2">
             <div class="col-sm-2"></div>
             <div class="col-sm-8">
-              <button class="btn btn-danger btn-block" data-type="clear" type="submit">Clear</button>
+              <button class="btn btn-warning btn-block" data-type="delete" type="submit">Delete Selection</button>
+            </div>
+          </div>
+          <div class="row mt-2">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-8">
+              <button class="btn btn-danger btn-block" data-type="clear" type="submit">Clear All</button>
             </div>
           </div>
         </div>
@@ -140,10 +128,6 @@
             <pre id="js-output"></pre>
           </p>
         </div>
-
-        <p class="lead">
-          <span id="js-cost"></span>
-        </p>
       </div>
     </div>
 
@@ -170,11 +154,12 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
       integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
       crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/3.4.0/fabric.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/1.7.2/fabric.min.js"></script>
     <script src="static/ascii-table.min.js"></script>
     <script src="static/sql-wasm.js"></script>
     <script src="static/sql.js"></script>
-    <script src="static/main.js"></script>
+    <script src="static/node.js"></script>
+    <script src="static/event.js"></script>
 </body>
 
 </html>

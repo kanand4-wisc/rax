@@ -113,11 +113,11 @@ function canvasMouseUpEventHandler(ev, canvas, connectorConfig) {
   resetConnector(connectorConfig);
 }
 
-function canvasMouseDoubleClickHandler(ev) {
-  const target = ev.target;
+function run(target) {
   if (!target || !(target instanceof Node)) return;
+
   const jsonObj = {};
-  const root = getOutputFromOperator(operator, jsonObj);
+  const root = target.getOutput(jsonObj);
 
   // add root
   jsonObj['root'] = root;
@@ -125,31 +125,15 @@ function canvasMouseDoubleClickHandler(ev) {
   const query = decryptQueryData(jsonObj, root);
   const data = runQuery(window.db, query);
 
-  let cost = 0;
-
   const table = new window.AsciiTable('')
   const columns = data[0].columns;
   table.setHeading(...columns);
   for (const row of data[0].values) {
     table.addRow(...row);
-
-    // calculate cost of query
-    for (const obj of row) {
-      if (typeof obj == 'string') {
-        cost += obj.length;
-      } else if (typeof obj == 'number') {
-        cost += 8;
-      }
-    }
   }
 
-  const nodeOutput = `Node Output : ${cost} bytes`;
-
   const out = document.getElementById('js-output');
-  const nodeCostOut = document.getElementById('js-cost');
-
   out.innerText = table;
-  nodeCostOut.innerText = nodeOutput;
 }
 
 function registerButtonHandlers(canvas) {
@@ -163,13 +147,14 @@ function registerButtonHandlers(canvas) {
       switch (buttonType) {
         case 'operator':
           const operatorType = btn.dataset.operatorType;
+          console.log(operatorType);
           const kls = {
             'sigma': Sigma,
             'project': Project,
             'union': Union,
             'intersect': Intersect,
             'join': Join
-          }[operatorType]
+          }[operatorType];
 
           // create, initialize, and add to canvas
           const operator = new kls();
@@ -185,8 +170,13 @@ function registerButtonHandlers(canvas) {
           canvas.add(table);
           break
         case 'load':
+          await loadSample();
+          break
+        case 'run':
+          run(canvas.getActiveObject());
           break
         case 'clear':
+          canvas.clearAll();
           break
         case 'delete':
           break
@@ -212,10 +202,6 @@ function addEventListeners(canvas) {
 
   canvas.on('mouse:move', (ev) => {
     canvasMouseMoveEventHandler(ev, canvas, connectorConfig);
-  });
-
-  canvas.on('mouse:dblclick', (ev) => {
-    canvasMouseDoubleClickHandler(ev);
   });
 
   registerButtonHandlers(canvas);
@@ -248,17 +234,5 @@ function initCanvas() {
 
 // initialize everything and set event handlers
 window.onload = async () => {
-  const loadSampleButton = document.getElementById('js-loadsample');
-  loadSampleButton.addEventListener('click', async (ev) => {
-    ev.preventDefault();
-    const introDom = document.getElementById('js-intro');
-    const raxDom = document.getElementById('js-rax');
-
-    // toggle between intro and rax modes
-    introDom.classList.add('hidden');
-    raxDom.classList.remove('hidden');
-
-    await loadSample();
-    initCanvas();
-  })
+  initCanvas();
 };
