@@ -208,6 +208,8 @@ function addEventListeners(canvas) {
 
 async function loadSample() {
   window.db = await initDB();
+  const currentDBDom = document.getElementById('js-current-db');
+  currentDBDom.innerText = 'sample';
   insertSampleData(db);
 }
 
