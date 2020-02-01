@@ -39,6 +39,9 @@ class Line extends fabric.Line {
       lockMovementY: true,
       lockRotation: true
     });
+
+    this.inputAnchor = null;
+    this.outputAnchor = null;
   }
 }
 
@@ -57,6 +60,23 @@ class Anchor extends fabric.Circle {
     this.lineInputs = [];
     this.lineOutputs = [];
   };
+
+  removeLine(line) {
+    let i = 0;
+    for (i = 0; i < this.lineOutputs.length; ++i) {
+      if (this.lineOutputs[i] == line) {
+        break;
+      }
+    }
+    this.lineOutputs.splice(i, 1);
+
+    for (i = 0; i < this.lineInputs.length; ++i) {
+      if (this.lineInputs[i] == line) {
+        break;
+      }
+    }
+    this.lineInputs.splice(i, 1);
+  }
 }
 
 function getAnchor({ nodeCenterPoint, assetRadius, direction }) {
@@ -232,6 +252,17 @@ class Operator extends Node {
     });
 
     this.inputs = [];
+  }
+
+  removeOperator(operator) {
+    let i;
+    for (i = 0; i < this.inputs.length; ++i) {
+      if (this.inputs[i] == operator) {
+        break;
+      }
+    }
+
+    this.inputs.splice(i, 1);
   }
 }
 

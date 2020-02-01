@@ -96,11 +96,15 @@ function canvasMouseUpEventHandler(ev, canvas, connectorConfig) {
     connectorConfig.connectorLine.setCoords();
     connectorConfig.connectorLine.sendToBack();
 
-    // output operator will be the one whose "input" anchor is
+    // output anchor will be the one whose "input" anchor is
     // being connected to
-    const [inputOperator, outputOperator] = anchor.direction === 'output' ?
-      [anchor.group, connectorConfig.startAnchor.group] : [connectorConfig.startAnchor.group, anchor.group];
+    const [inputAnchor, outputAnchor] = anchor.direction === 'output' ?
+      [anchor, connectorConfig.startAnchor] : [connectorConfig.startAnchor, anchor];
 
+    connectorConfig.connectorLine.inputAnchor = inputAnchor;
+    connectorConfig.connectorLine.outputAnchor = outputAnchor;
+
+    const [inputOperator, outputOperator] = [inputAnchor.group, outputAnchor.group];
     outputOperator.inputs.push(inputOperator);
 
     // save line to anchors to update while moving the node
@@ -113,7 +117,41 @@ function canvasMouseUpEventHandler(ev, canvas, connectorConfig) {
   resetConnector(connectorConfig);
 }
 
+function deleteConnectorLine(line, canvas) {
+  // remove line from both anchors
+  line.inputAnchor.removeLine(line);
+  line.outputAnchor.removeLine(line);
+
+  line.outputAnchor.group.removeOperator(line.inputAnchor.group);
+
+  canvas.remove(line);
+}
+
+function deleteNode(node, canvas) {
+  const anchors = node.anchors;
+
+  for (const anchor of anchors) {
+    for (const line of anchor.lineInputs) {
+      deleteConnectorLine(line, canvas);
+    }
+
+    for (const line of anchor.lineOutputs) {
+      deleteConnectorLine(line, canvas);
+    }
+  }
+
+  canvas.remove(node);
+}
+
+function deleteObject(target, canvas) {
+  if (!target) return;
+
+  if (target instanceof Node) deleteNode(target, canvas);
+  else if (target instanceof Line) deleteConnectorLine(target, canvas);
+}
+
 function run(target) {
+  if (!window.db) return;
   if (!target || !(target instanceof Node)) return;
 
   const jsonObj = {};
@@ -178,6 +216,7 @@ function registerButtonHandlers(canvas) {
           canvas.clearAll();
           break
         case 'delete':
+          deleteObject(canvas.getActiveObject(), canvas);
           break
       }
     });
