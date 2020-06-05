@@ -174,6 +174,11 @@ function run(target) {
   out.innerText = table;
 }
 
+function canvasOnSelectHandler(ev) {
+  var activeObj = ev.target;
+  activeObj.set({ 'backgroundColor': 'red' });
+}
+
 function registerButtonHandlers(canvas) {
   const symbolButtons = document.querySelectorAll('.js-buttons button');
 
@@ -240,6 +245,10 @@ function addEventListeners(canvas) {
 
   canvas.on('mouse:move', (ev) => {
     canvasMouseMoveEventHandler(ev, canvas, connectorConfig);
+  });
+
+  canvas.on('object:selected', (ev) => {
+    canvasOnSelectHandler(ev);
   });
 
   registerButtonHandlers(canvas);
