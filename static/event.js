@@ -1,8 +1,9 @@
 function checkOrGetAnchor(ev) {
-  const subTargets = ev.subTargets;
+  const subTargets =
+    ev.currentSubTargets || ev.subTargets;
 
   // return early if clicked on canvas
-  if (subTargets.length === 0) return null;
+  if (!subTargets || subTargets.length === 0) return null;
 
   // we're only concerned with one anchor being clicked
   // and we want it to be an Anchor
@@ -68,6 +69,7 @@ function canvasMouseMoveEventHandler(ev, canvas, connectorConfig) {
     ]);
 
     canvas.add(connectorConfig.connectorLine);
+    canvas.sendToBack(connectorConfig.connectorLine);
   }
 
   canvas.renderAll();
