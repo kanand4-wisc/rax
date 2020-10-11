@@ -135,7 +135,7 @@ function getTextBox({ text, nodeCenterPoint, assetRadius }) {
   return textBox;
 }
 
-class Node extends fabric.Group {
+export class Node extends fabric.Group {
   constructor({ assetName, assetScale, text, hasInput, hasOutput }) {
     // initialize empty group
     super([], {

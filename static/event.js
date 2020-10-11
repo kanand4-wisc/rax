@@ -1,11 +1,14 @@
 import { fabric } from 'fabric';
-import { Anchor, Line, Sigma, Join, Project, Table, Union, Intersect } from './node.js';
-import { initDB, insertSampleData, decryptQueryData, runQuery } from './sql.js';
 import AsciiTable from 'ascii-table';
+import {
+  Anchor, Line, Sigma, Join, Project, Table, Union, Intersect, Node
+} from './node';
+import {
+  initDB, insertSampleData, decryptQueryData, runQuery,
+} from './sql';
 
 function checkOrGetAnchor(ev) {
-  const subTargets =
-    ev.currentSubTargets || ev.subTargets;
+  const subTargets = ev.currentSubTargets || ev.subTargets;
 
   // return early if clicked on canvas
   if (!subTargets || subTargets.length === 0) return null;
@@ -55,7 +58,7 @@ function canvasMouseMoveEventHandler(ev, canvas, connectorConfig) {
   if (connectorConfig.connectorLine) {
     connectorConfig.connectorLine.set({
       x2: x,
-      y2: y
+      y2: y,
     });
 
     connectorConfig.connectorLine.setCoords();
@@ -70,7 +73,7 @@ function canvasMouseMoveEventHandler(ev, canvas, connectorConfig) {
       x1,
       y1,
       x,
-      y
+      y,
     ]);
 
     canvas.add(connectorConfig.connectorLine);
@@ -98,15 +101,15 @@ function canvasMouseUpEventHandler(ev, canvas, connectorConfig) {
     const y2 = anchor.getCenterPoint().y + anchor.group.getCenterPoint().y;
     connectorConfig.connectorLine.set({
       x2,
-      y2
+      y2,
     });
     connectorConfig.connectorLine.setCoords();
     connectorConfig.connectorLine.sendToBack();
 
     // output anchor will be the one whose "input" anchor is
     // being connected to
-    const [inputAnchor, outputAnchor] = anchor.direction === 'output' ?
-      [anchor, connectorConfig.startAnchor] : [connectorConfig.startAnchor, anchor];
+    const [inputAnchor, outputAnchor] = anchor.direction === 'output'
+      ? [anchor, connectorConfig.startAnchor] : [connectorConfig.startAnchor, anchor];
 
     connectorConfig.connectorLine.inputAnchor = inputAnchor;
     connectorConfig.connectorLine.outputAnchor = outputAnchor;
@@ -135,7 +138,7 @@ function deleteConnectorLine(line, canvas) {
 }
 
 function deleteNode(node, canvas) {
-  const anchors = node.anchors;
+  const { anchors } = node;
 
   for (const anchor of anchors) {
     for (const line of anchor.lineInputs) {
@@ -165,13 +168,13 @@ function run(target) {
   const root = target.getOutput(jsonObj);
 
   // add root
-  jsonObj['root'] = root;
+  jsonObj.root = root;
 
   const query = decryptQueryData(jsonObj, root);
   const data = runQuery(window.db, query);
 
-  const table = new AsciiTable('')
-  const columns = data[0].columns;
+  const table = new AsciiTable('');
+  const { columns } = data[0];
   table.setHeading(...columns);
   for (const row of data[0].values) {
     table.addRow(...row);
@@ -182,8 +185,8 @@ function run(target) {
 }
 
 function canvasOnSelectHandler(ev) {
-  var activeObj = ev.target;
-  activeObj.set({ 'backgroundColor': 'red' });
+  const activeObj = ev.target;
+  activeObj.set({ backgroundColor: 'red' });
 }
 
 function registerButtonHandlers(canvas) {
@@ -196,13 +199,13 @@ function registerButtonHandlers(canvas) {
 
       switch (buttonType) {
         case 'operator':
-          const operatorType = btn.dataset.operatorType;
+          const { operatorType } = btn.dataset;
           const kls = {
-            'sigma': Sigma,
-            'project': Project,
-            'union': Union,
-            'intersect': Intersect,
-            'join': Join
+            sigma: Sigma,
+            project: Project,
+            union: Union,
+            intersect: Intersect,
+            join: Join,
           }[operatorType];
 
           // create, initialize, and add to canvas
@@ -210,26 +213,26 @@ function registerButtonHandlers(canvas) {
           await operator.init();
 
           canvas.add(operator);
-          break
+          break;
         case 'table':
-          const tableName = btn.dataset.tableName;
+          const { tableName } = btn.dataset;
           const table = new Table({ tableName });
           await table.init();
 
           canvas.add(table);
-          break
+          break;
         case 'load':
           await loadSample();
-          break
+          break;
         case 'run':
           run(canvas.getActiveObject());
-          break
+          break;
         case 'clear':
           canvas.clearAll();
-          break
+          break;
         case 'delete':
           deleteObject(canvas.getActiveObject(), canvas);
-          break
+          break;
       }
     });
   }
@@ -239,7 +242,7 @@ function addEventListeners(canvas) {
   const connectorConfig = {
     isLineMode: false,
     connectorLine: null,
-    startAnchor: null
+    startAnchor: null,
   };
 
   canvas.on('mouse:down', (ev) => {
@@ -274,7 +277,7 @@ export default function initCanvas() {
 
   const parentWidth = canvasDom.parentNode.offsetWidth;
   canvasDom.width = parentWidth;
-  canvasDom.height = "600";
+  canvasDom.height = '600';
 
   const canvas = new fabric.Canvas(canvasId);
 

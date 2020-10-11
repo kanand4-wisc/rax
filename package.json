@@ -4,7 +4,8 @@
   "description": "An educational tool for learning relational algebra",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "mkdir -p dist && cp node_modules/sql-wasm/dist/sqlite3.wasm dist/ && parcel index.html",
+    "build": "mkdir -p dist && cp node_modules/sql-wasm/dist/sqlite3.wasm dist/ && parcel build index.html"
   },
   "repository": {
     "type": "git",
@@ -25,5 +26,10 @@
     "bootswatch": "^4.5.2",
     "fabric": "^4.2.0",
     "sql-wasm": "^1.1.4"
+  },
+  "devDependencies": {
+    "eslint": "^7.11.0",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-plugin-import": "^2.22.1"
   }
 }
