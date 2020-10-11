@@ -9,26 +9,26 @@ import ASVG from './assets/A.svg';
 import BSVG from './assets/B.svg';
 
 const svgMap = {
-  'sigma': sigmaSVG,
-  'project': projectSVG,
-  'join': joinSVG,
-  'union': unionSVG,
-  'intersect': intersectSVG,
-  'A': ASVG,
-  'B': BSVG
-}
+  sigma: sigmaSVG,
+  project: projectSVG,
+  join: joinSVG,
+  union: unionSVG,
+  intersect: intersectSVG,
+  A: ASVG,
+  B: BSVG,
+};
 
 async function getAsset(name, scale) {
   const assetURL = svgMap[name];
 
   const asset = await new Promise((resolve) => {
     fabric.loadSVGFromURL(assetURL, (objects, options) => {
-      const asset = fabric.util.groupSVGElements(objects, options);
-      asset.scale(scale);
-      asset.hasControls = false;
-      asset.hasBorders = false;
+      const fabricAsset = fabric.util.groupSVGElements(objects, options);
+      fabricAsset.scale(scale);
+      fabricAsset.hasControls = false;
+      fabricAsset.hasBorders = false;
 
-      resolve(asset);
+      resolve(fabricAsset);
     });
   });
 
@@ -40,10 +40,10 @@ const getVarName = (() => {
 
   return () => {
     const varName = `x${counter}`;
-    counter++;
+    counter += 1;
 
     return varName;
-  }
+  };
 })();
 
 export class Line extends fabric.Line {
@@ -57,7 +57,7 @@ export class Line extends fabric.Line {
       hasControls: false,
       lockMovementX: true,
       lockMovementY: true,
-      lockRotation: true
+      lockRotation: true,
     });
 
     this.inputAnchor = null;
@@ -66,32 +66,34 @@ export class Line extends fabric.Line {
 }
 
 export class Anchor extends fabric.Circle {
-  constructor({ radius, fill, left, top, direction }) {
+  constructor({
+    radius, fill, left, top, direction,
+  }) {
     super({
       radius,
       fill,
       left,
       top,
       originX: 'center',
-      originY: 'center'
+      originY: 'center',
     });
 
     this.direction = direction;
     this.lineInputs = [];
     this.lineOutputs = [];
-  };
+  }
 
   removeLine(line) {
     let i = 0;
-    for (i = 0; i < this.lineOutputs.length; ++i) {
-      if (this.lineOutputs[i] == line) {
+    for (i = 0; i < this.lineOutputs.length; i += 1) {
+      if (this.lineOutputs[i] === line) {
         break;
       }
     }
     this.lineOutputs.splice(i, 1);
 
-    for (i = 0; i < this.lineInputs.length; ++i) {
-      if (this.lineInputs[i] == line) {
+    for (i = 0; i < this.lineInputs.length; i += 1) {
+      if (this.lineInputs[i] === line) {
         break;
       }
     }
@@ -104,16 +106,16 @@ function getAnchor({ nodeCenterPoint, assetRadius, direction }) {
   const radius = 5;
   const fill = '#ffc4c4';
   const left = nodeCenterPoint.x;
-  const top = direction === 'input' ?
-    nodeCenterPoint.y + assetRadius + margin + radius :
-    nodeCenterPoint.y - assetRadius - margin - radius;
+  const top = direction === 'input'
+    ? nodeCenterPoint.y + assetRadius + margin + radius
+    : nodeCenterPoint.y - assetRadius - margin - radius;
 
   const anchor = new Anchor({
     radius,
     fill,
     left,
     top,
-    direction
+    direction,
   });
 
   return anchor;
@@ -129,14 +131,16 @@ function getTextBox({ text, nodeCenterPoint, assetRadius }) {
     fontSize,
     left,
     top,
-    originY: 'center'
+    originY: 'center',
   });
 
   return textBox;
 }
 
 export class Node extends fabric.Group {
-  constructor({ assetName, assetScale, text, hasInput, hasOutput }) {
+  constructor({
+    assetName, assetScale, text, hasInput, hasOutput,
+  }) {
     // initialize empty group
     super([], {
       left: 100,
@@ -144,7 +148,7 @@ export class Node extends fabric.Group {
       hasControls: false,
       hasBorders: true,
       selectable: true,
-      subTargetCheck: true
+      subTargetCheck: true,
     });
 
     this.assetName = assetName;
@@ -163,7 +167,7 @@ export class Node extends fabric.Group {
       left: this.getCenterPoint().x,
       top: this.getCenterPoint().y,
       originX: 'center',
-      originY: 'center'
+      originY: 'center',
     });
     this.addWithUpdate(asset);
 
@@ -177,7 +181,7 @@ export class Node extends fabric.Group {
       const inputAnchor = getAnchor({
         nodeCenterPoint,
         assetRadius,
-        direction: 'input'
+        direction: 'input',
       });
 
       this.addWithUpdate(inputAnchor);
@@ -188,7 +192,7 @@ export class Node extends fabric.Group {
       const outputAnchor = getAnchor({
         nodeCenterPoint,
         assetRadius,
-        direction: 'output'
+        direction: 'output',
       });
 
       this.addWithUpdate(outputAnchor);
@@ -199,7 +203,7 @@ export class Node extends fabric.Group {
       const textBox = getTextBox({
         text: this.text,
         nodeCenterPoint,
-        assetRadius
+        assetRadius,
       });
 
       this.addWithUpdate(textBox);
@@ -214,7 +218,7 @@ export class Node extends fabric.Group {
       for (const line of anchor.lineInputs) {
         line.set({
           x2: x,
-          y2: y
+          y2: y,
         });
 
         line.setCoords();
@@ -223,16 +227,12 @@ export class Node extends fabric.Group {
       for (const line of anchor.lineOutputs) {
         line.set({
           x1: x,
-          y1: y
+          y1: y,
         });
 
         line.setCoords();
       }
     }
-  }
-
-  getOutput(jsonObj) {
-    throw new Error('Not Implemented');
   }
 }
 
@@ -243,7 +243,7 @@ export class Table extends Node {
       text: tableName,
       hasInput: false,
       hasOutput: true,
-      assetScale: 0.5
+      assetScale: 0.5,
     });
 
     this.tableName = tableName;
@@ -268,7 +268,7 @@ class Operator extends Node {
       text: operatorText,
       hasInput: true,
       hasOutput: true,
-      assetScale
+      assetScale,
     });
 
     this.inputs = [];
@@ -276,8 +276,8 @@ class Operator extends Node {
 
   removeOperator(operator) {
     let i;
-    for (i = 0; i < this.inputs.length; ++i) {
-      if (this.inputs[i] == operator) {
+    for (i = 0; i < this.inputs.length; i += 1) {
+      if (this.inputs[i] === operator) {
         break;
       }
     }
@@ -295,7 +295,7 @@ export class Sigma extends Operator {
     super({
       operatorName,
       assetScale,
-      operatorText: condition
+      operatorText: condition,
     });
 
     this.condition = condition;
@@ -308,7 +308,7 @@ export class Sigma extends Operator {
     jsonObj[key] = {
       operator: 'Select',
       input,
-      condition: this.condition
+      condition: this.condition,
     };
 
     return key;
@@ -324,7 +324,7 @@ export class Project extends Operator {
     super({
       operatorName,
       assetScale,
-      operatorText: colNames
+      operatorText: colNames,
     });
 
     this.colNames = colNames;
@@ -337,7 +337,7 @@ export class Project extends Operator {
     jsonObj[key] = {
       operator: 'Project',
       input,
-      colNames: this.colNames
+      colNames: this.colNames,
     };
 
     return key;
@@ -352,7 +352,7 @@ export class Join extends Operator {
     super({
       operatorName,
       assetScale,
-      operatorText: null
+      operatorText: null,
     });
   }
 
@@ -360,12 +360,12 @@ export class Join extends Operator {
     const key = getVarName();
     const input = [
       this.inputs[0].getOutput(jsonObj),
-      this.inputs[1].getOutput(jsonObj)
+      this.inputs[1].getOutput(jsonObj),
     ];
 
     jsonObj[key] = {
       operator: 'Join',
-      input
+      input,
     };
 
     return key;
@@ -380,7 +380,7 @@ export class Union extends Operator {
     super({
       operatorName,
       assetScale,
-      operatorText: null
+      operatorText: null,
     });
   }
 
@@ -388,12 +388,12 @@ export class Union extends Operator {
     const key = getVarName();
     const input = [
       this.inputs[0].getOutput(jsonObj),
-      this.inputs[1].getOutput(jsonObj)
+      this.inputs[1].getOutput(jsonObj),
     ];
 
     jsonObj[key] = {
       operator: 'Union',
-      input
+      input,
     };
 
     return key;
@@ -408,7 +408,7 @@ export class Intersect extends Operator {
     super({
       operatorName,
       assetScale,
-      operatorText: null
+      operatorText: null,
     });
   }
 
@@ -416,12 +416,12 @@ export class Intersect extends Operator {
     const key = getVarName();
     const input = [
       this.inputs[0].getOutput(jsonObj),
-      this.inputs[1].getOutput(jsonObj)
+      this.inputs[1].getOutput(jsonObj),
     ];
 
     jsonObj[key] = {
       operator: 'Intersect',
-      input
+      input,
     };
 
     return key;

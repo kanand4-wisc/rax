@@ -1,7 +1,7 @@
 import { fabric } from 'fabric';
 import AsciiTable from 'ascii-table';
 import {
-  Anchor, Line, Sigma, Join, Project, Table, Union, Intersect, Node
+  Anchor, Line, Sigma, Join, Project, Table, Union, Intersect, Node,
 } from './node';
 import {
   initDB, insertSampleData, decryptQueryData, runQuery,
@@ -66,8 +66,10 @@ function canvasMouseMoveEventHandler(ev, canvas, connectorConfig) {
     // object position in a group is relative to the center of the group
     // thus we need to add group center position to get the absolute
     // coordinates
-    const x1 = connectorConfig.startAnchor.getCenterPoint().x + connectorConfig.startAnchor.group.getCenterPoint().x;
-    const y1 = connectorConfig.startAnchor.getCenterPoint().y + connectorConfig.startAnchor.group.getCenterPoint().y;
+    const x1 = connectorConfig.startAnchor.getCenterPoint().x
+      + connectorConfig.startAnchor.group.getCenterPoint().x;
+    const y1 = connectorConfig.startAnchor.getCenterPoint().y
+      + connectorConfig.startAnchor.group.getCenterPoint().y;
 
     connectorConfig.connectorLine = new Line([
       x1,
@@ -90,9 +92,9 @@ function canvasMouseUpEventHandler(ev, canvas, connectorConfig) {
   const anchor = checkOrGetAnchor(ev);
 
   if (!anchor
-    || connectorConfig.startAnchor == anchor
-    || connectorConfig.startAnchor.group == anchor.group
-    || connectorConfig.startAnchor.direction == anchor.direction) {
+    || connectorConfig.startAnchor === anchor
+    || connectorConfig.startAnchor.group === anchor.group
+    || connectorConfig.startAnchor.direction === anchor.direction) {
     // remove line from the canvas
     canvas.remove(connectorConfig.connectorLine);
   } else {
@@ -189,6 +191,13 @@ function canvasOnSelectHandler(ev) {
   activeObj.set({ backgroundColor: 'red' });
 }
 
+async function loadSample() {
+  window.db = await initDB();
+  const currentDBDom = document.getElementById('js-current-db');
+  currentDBDom.innerText = 'sample';
+  insertSampleData(window.db);
+}
+
 function registerButtonHandlers(canvas) {
   const symbolButtons = document.querySelectorAll('.js-buttons button');
 
@@ -198,9 +207,9 @@ function registerButtonHandlers(canvas) {
       ev.preventDefault();
 
       switch (buttonType) {
-        case 'operator':
+        case 'operator': {
           const { operatorType } = btn.dataset;
-          const kls = {
+          const NodeClass = {
             sigma: Sigma,
             project: Project,
             union: Union,
@@ -209,18 +218,20 @@ function registerButtonHandlers(canvas) {
           }[operatorType];
 
           // create, initialize, and add to canvas
-          const operator = new kls();
+          const operator = new NodeClass();
           await operator.init();
 
           canvas.add(operator);
           break;
-        case 'table':
+        }
+        case 'table': {
           const { tableName } = btn.dataset;
           const table = new Table({ tableName });
           await table.init();
 
           canvas.add(table);
           break;
+        }
         case 'load':
           await loadSample();
           break;
@@ -233,6 +244,8 @@ function registerButtonHandlers(canvas) {
         case 'delete':
           deleteObject(canvas.getActiveObject(), canvas);
           break;
+        default:
+          throw new Error('Invalid button');
       }
     });
   }
@@ -262,13 +275,6 @@ function addEventListeners(canvas) {
   });
 
   registerButtonHandlers(canvas);
-}
-
-async function loadSample() {
-  window.db = await initDB();
-  const currentDBDom = document.getElementById('js-current-db');
-  currentDBDom.innerText = 'sample';
-  insertSampleData(db);
 }
 
 export default function initCanvas() {
