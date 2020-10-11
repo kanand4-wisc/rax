@@ -123,7 +123,9 @@ export function decryptQueryData(data, rootNode) {
 }
 
 export async function initDB() {
-  const sql = await createSqlWasm();
+  const sql = await createSqlWasm({
+    wasmUrl: 'https://cdn.jsdelivr.net/npm/sql-wasm@1.1.4/dist/sqlite3.wasm',
+  });
 
   const db = new sql.Database();
   return db;
