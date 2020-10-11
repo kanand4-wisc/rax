@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "mkdir -p dist && cp node_modules/sql-wasm/dist/sqlite3.wasm dist/ && parcel index.html",
-    "build": "mkdir -p dist && cp node_modules/sql-wasm/dist/sqlite3.wasm dist/ && parcel build index.html"
+    "build": "mkdir -p dist && cp node_modules/sql-wasm/dist/sqlite3.wasm dist/ && parcel build index.html --public-url ./"
   },
   "repository": {
     "type": "git",
