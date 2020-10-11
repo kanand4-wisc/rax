@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="1250"
+   height="2500"
+   id="svg2"
+   sodipodi:version="0.32"
+   inkscape:version="0.46dev+devel"
+   version="1.0"
+   sodipodi:docname="Times New Roman Greek small letter sigma.svg"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape">
+  <defs
+     id="defs4" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.0875"
+     inkscape:cx="-537.77823"
+     inkscape:cy="-54.406134"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:showpageshadow="false"
+     inkscape:window-width="1280"
+     inkscape:window-height="1003"
+     inkscape:window-x="0"
+     inkscape:window-y="0" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Livello 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(532.14288,1359.0664)">
+    <path
+       style="font-size:2048px;font-style:normal;font-weight:normal;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:3;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:2;stroke-dashoffset:0;stroke-opacity:1;font-family:Times New Roman"
+       d="M 583.85712,-347.56641 L 583.85712,-201.56641 L 193.85712,-201.56641 C 279.18969,-152.89902 348.85629,-91.39908 402.85712,-17.066406 C 456.85618,57.267438 483.85615,136.10069 483.85712,219.43359 C 483.85615,328.1005 441.02286,418.10041 355.35712,489.43359 C 269.6897,560.76693 172.52313,596.43357 63.857117,596.43359 C -64.809964,596.43357 -175.80985,545.93362 -269.14288,444.93359 C -362.47633,343.93382 -409.14295,226.43394 -409.14288,92.433594 C -409.14295,-2.2325023 -384.64298,-85.899085 -335.64288,-158.56641 C -286.64308,-231.23227 -229.64313,-280.89889 -164.64288,-307.56641 C -99.643263,-334.23217 -11.810017,-347.56549 98.857117,-347.56641 L 583.85712,-347.56641 z M 126.85712,-201.56641 L 91.857117,-201.56641 C -8.1433543,-201.56564 -87.976608,-176.73233 -147.64288,-127.06641 C -207.30982,-77.399094 -237.14313,0.43416175 -237.14288,106.43359 C -237.14313,219.10061 -205.80982,318.60051 -143.14288,404.93359 C -80.476615,491.267 -7.1433553,534.43363 76.857117,534.43359 C 144.18983,534.43363 199.85644,501.93366 243.85712,436.93359 C 287.85635,371.93379 309.85633,293.43387 309.85712,201.43359 C 309.85633,55.434107 248.85639,-78.899092 126.85712,-201.56641 L 126.85712,-201.56641 z"
+       id="text2332" />
+  </g>
+</svg>
