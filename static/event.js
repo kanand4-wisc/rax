@@ -1,3 +1,8 @@
+import { fabric } from 'fabric';
+import { Anchor, Line, Sigma, Join, Project, Table, Union, Intersect } from './node.js';
+import { initDB, insertSampleData, decryptQueryData, runQuery } from './sql.js';
+import AsciiTable from 'ascii-table';
+
 function checkOrGetAnchor(ev) {
   const subTargets =
     ev.currentSubTargets || ev.subTargets;
@@ -165,7 +170,7 @@ function run(target) {
   const query = decryptQueryData(jsonObj, root);
   const data = runQuery(window.db, query);
 
-  const table = new window.AsciiTable('')
+  const table = new AsciiTable('')
   const columns = data[0].columns;
   table.setHeading(...columns);
   for (const row of data[0].values) {
@@ -263,7 +268,7 @@ async function loadSample() {
   insertSampleData(db);
 }
 
-function initCanvas() {
+export default function initCanvas() {
   const canvasId = 'board';
   const canvasDom = document.getElementById(canvasId);
 
@@ -282,8 +287,3 @@ function initCanvas() {
 
   addEventListeners(canvas);
 }
-
-// initialize everything and set event handlers
-window.onload = async () => {
-  initCanvas();
-};

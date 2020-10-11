@@ -1,0 +1,29 @@
+{
+  "name": "rax",
+  "version": "1.0.0",
+  "description": "An educational tool for learning relational algebra",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kartikanand/rax.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "browserslist": [
+    "last 1 Chrome versions"
+  ],
+  "bugs": {
+    "url": "https://github.com/kartikanand/rax/issues"
+  },
+  "homepage": "https://github.com/kartikanand/rax#readme",
+  "dependencies": {
+    "ascii-table": "0.0.9",
+    "bootswatch": "^4.5.2",
+    "fabric": "^4.2.0",
+    "sql-wasm": "^1.1.4"
+  }
+}

@@ -1,5 +1,25 @@
+import { fabric } from 'fabric';
+
+import sigmaSVG from './assets/sigma.svg';
+import projectSVG from './assets/project.svg';
+import joinSVG from './assets/join.svg';
+import unionSVG from './assets/union.svg';
+import intersectSVG from './assets/intersect.svg';
+import ASVG from './assets/A.svg';
+import BSVG from './assets/B.svg';
+
+const svgMap = {
+  'sigma': sigmaSVG,
+  'project': projectSVG,
+  'join': joinSVG,
+  'union': unionSVG,
+  'intersect': intersectSVG,
+  'A': ASVG,
+  'B': BSVG
+}
+
 async function getAsset(name, scale) {
-  const assetURL = `static/assets/${name}.svg`;
+  const assetURL = svgMap[name];
 
   const asset = await new Promise((resolve) => {
     fabric.loadSVGFromURL(assetURL, (objects, options) => {
@@ -26,7 +46,7 @@ const getVarName = (() => {
   }
 })();
 
-class Line extends fabric.Line {
+export class Line extends fabric.Line {
   constructor(points) {
     super(points, {
       fill: 'black',
@@ -45,7 +65,7 @@ class Line extends fabric.Line {
   }
 }
 
-class Anchor extends fabric.Circle {
+export class Anchor extends fabric.Circle {
   constructor({ radius, fill, left, top, direction }) {
     super({
       radius,
@@ -216,7 +236,7 @@ class Node extends fabric.Group {
   }
 }
 
-class Table extends Node {
+export class Table extends Node {
   constructor({ tableName }) {
     super({
       assetName: tableName,
@@ -266,7 +286,7 @@ class Operator extends Node {
   }
 }
 
-class Sigma extends Operator {
+export class Sigma extends Operator {
   constructor() {
     const operatorName = 'sigma';
     const assetScale = 0.030;
@@ -295,7 +315,7 @@ class Sigma extends Operator {
   }
 }
 
-class Project extends Operator {
+export class Project extends Operator {
   constructor() {
     const operatorName = 'project';
     const assetScale = 0.5;
@@ -324,7 +344,7 @@ class Project extends Operator {
   }
 }
 
-class Join extends Operator {
+export class Join extends Operator {
   constructor() {
     const operatorName = 'join';
     const assetScale = 0.5;
@@ -352,7 +372,7 @@ class Join extends Operator {
   }
 }
 
-class Union extends Operator {
+export class Union extends Operator {
   constructor() {
     const operatorName = 'union';
     const assetScale = 0.5;
@@ -380,7 +400,7 @@ class Union extends Operator {
   }
 }
 
-class Intersect extends Operator {
+export class Intersect extends Operator {
   constructor() {
     const operatorName = 'intersect';
     const assetScale = 0.5;
