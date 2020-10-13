@@ -198,6 +198,19 @@ async function loadSample() {
   insertSampleData(window.db);
 }
 
+function execSql() {
+  const sql = document.getElementById('js-sql').value;
+  if (!sql) return;
+
+  window.db.run(sql);
+}
+
+async function createDB() {
+  window.db = await initDB();
+  const currentDBDom = document.getElementById('js-current-db');
+  currentDBDom.innerText = 'new db';
+}
+
 function registerButtonHandlers(canvas) {
   const symbolButtons = document.querySelectorAll('.js-buttons button');
 
@@ -234,6 +247,12 @@ function registerButtonHandlers(canvas) {
         }
         case 'load':
           await loadSample();
+          break;
+        case 'create-db':
+          await createDB();
+          break;
+        case 'exec-sql':
+          execSql();
           break;
         case 'run':
           run(canvas.getActiveObject());

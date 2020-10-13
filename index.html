@@ -10,7 +10,6 @@
       font-size: 1.5rem !important;
     }
   </style>
-
 </head>
 
 <body>
@@ -28,7 +27,7 @@
           <div class="row mt-2">
             <div class="col-sm-2"></div>
             <div class="col-sm-8">
-              <button class="btn btn-primary btn-block" data-type="load" data-db-type="sqlite" type="submit">Load SQLite
+              <button class="btn btn-primary btn-block" data-type="create-db" type="submit">New
                 DB</button>
             </div>
           </div>
@@ -56,8 +55,8 @@
           <div class="row mt-2">
             <div class="col-sm-2"></div>
             <div class="col-sm-8">
-              <button class="btn btn-success btn-block btn-operator" data-type="operator" data-operator-type="union"
-                type="submit">∪</button>
+              <button class="btn btn-success btn-block btn-operator btn-union" data-type="operator"
+                data-operator-type="union" type="submit">∪</button>
             </div>
           </div>
           <div class="row mt-2">
@@ -121,8 +120,9 @@
           </div>
         </div>
         <div class="row mt-2">
-          <div class="col-sm-12 p-0 mt-2">
-            <button class="btn btn-primary btn-lg mb-1">Execute SQL</button>
+          <div class="col-sm-12 p-0 mt-2 js-buttons">
+            <button class="btn btn-primary btn-lg mb-1" data-type="exec-sql" type="submit">Execute
+              SQL</button>
             <textarea class="form-control" name="sql-code" id="js-sql" rows="10"></textarea>
           </div>
         </div>

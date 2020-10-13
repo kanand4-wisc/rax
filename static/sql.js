@@ -1,31 +1,22 @@
 import createSqlWasm from 'sql-wasm';
 
 export function insertSampleData(db) {
-  const ASql = 'CREATE TABLE A (a_id integer PRIMARY KEY, a integer NOT NULL, b text NOT NULL);';
-  db.run(ASql);
+  const sql = `
+    CREATE TABLE A (a_id integer PRIMARY KEY, a integer NOT NULL, b text NOT NULL);
+    INSERT INTO A VALUES (1, 1, "SF");;
+    INSERT INTO A VALUES (2, 2, "MONT");
+    INSERT INTO A VALUES (3, 3, "SF");
+    INSERT INTO A VALUES (4, 5, "SF");
+    INSERT INTO A VALUES (5, 6, "TX");
+    INSERT INTO A VALUES (6, 7, "SJ");
 
-  let insertData = 'INSERT INTO A VALUES (1, 1, "SF");';
-  db.run(insertData);
-  insertData = 'INSERT INTO A VALUES (2, 2, "MONT");';
-  db.run(insertData);
-  insertData = 'INSERT INTO A VALUES (3, 3, "SF");';
-  db.run(insertData);
-  insertData = 'INSERT INTO A VALUES (4, 5, "SF");';
-  db.run(insertData);
-  insertData = 'INSERT INTO A VALUES (5, 6, "TX");';
-  db.run(insertData);
-  insertData = 'INSERT INTO A VALUES (6, 7, "SJ");';
-  db.run(insertData);
+    CREATE TABLE B (b_id integer PRIMARY KEY, b text NOT NULL, c integer NOT NULL);
+    INSERT INTO B VALUES (1, "SF", 5);
+    INSERT INTO B VALUES (2, "SJ", 5);
+    INSERT INTO B VALUES (3, "TX", 5);
+  `;
 
-  const BSql = 'CREATE TABLE B (b_id integer PRIMARY KEY, b text NOT NULL, c integer NOT NULL)';
-  db.run(BSql);
-
-  insertData = 'INSERT INTO B VALUES (1, "SF", 5);';
-  db.run(insertData);
-  insertData = 'INSERT INTO B VALUES (2, "SJ", 5);';
-  db.run(insertData);
-  insertData = 'INSERT INTO B VALUES (3, "TX", 5);';
-  db.run(insertData);
+  db.run(sql);
 }
 
 export function runQuery(db, query) {
