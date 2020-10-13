@@ -1,38 +1,21 @@
 import { fabric } from 'fabric';
 
-import sigmaSVG from './assets/sigma.svg';
-import projectSVG from './assets/project.svg';
-import joinSVG from './assets/join.svg';
-import unionSVG from './assets/union.svg';
-import intersectSVG from './assets/intersect.svg';
-import ASVG from './assets/A.svg';
-import BSVG from './assets/B.svg';
-
-const svgMap = {
-  sigma: sigmaSVG,
-  project: projectSVG,
-  join: joinSVG,
-  union: unionSVG,
-  intersect: intersectSVG,
-  A: ASVG,
-  B: BSVG,
+const symbolMap = {
+  sigma: 'σ',
+  project: '∏',
+  join: '⋈',
+  union: '∪',
+  intersect: '∩',
+  table: '🗂',
 };
 
-async function getAsset(name, scale) {
-  const assetURL = svgMap[name];
-
-  const asset = await new Promise((resolve) => {
-    fabric.loadSVGFromURL(assetURL, (objects, options) => {
-      const fabricAsset = fabric.util.groupSVGElements(objects, options);
-      fabricAsset.scale(scale);
-      fabricAsset.hasControls = false;
-      fabricAsset.hasBorders = false;
-
-      resolve(fabricAsset);
-    });
+async function getAsset(name) {
+  const assetSymbol = symbolMap[name] || symbolMap.table;
+  const textBox = new fabric.Text(assetSymbol, {
+    fontSize: 50,
   });
 
-  return asset;
+  return textBox;
 }
 
 const getVarName = (() => {
