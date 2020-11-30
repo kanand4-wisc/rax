@@ -4,7 +4,7 @@ import {
   Anchor, Line, Sigma, Join, Project, Table, Union, Intersect, Node,
 } from './node';
 import {
-  initDB, insertSampleData, decryptQueryData, runQuery,
+  initDB, insertSampleData, decryptQueryData, runQuery, getTableNames,
 } from './sql';
 
 function checkOrGetAnchor(ev) {
@@ -191,11 +191,49 @@ function canvasOnSelectHandler(ev) {
   activeObj.set({ backgroundColor: 'red' });
 }
 
-async function loadSample() {
+function createTableButtons(tableNames, canvas) {
+  const parent = document.getElementById('js-table-btns');
+
+  const btnDivs = tableNames.map((tableName) => {
+    const domElement = document.createElement('div');
+    domElement.innerHTML = `
+      <div class="row mt-2">
+        <div class="col-sm-2"></div>
+        <div class="col-sm-8">
+          <button 
+            class="btn btn-success btn-block" 
+            data-type="table" 
+            data-table-name="${tableName}" 
+            type="submit">
+            ${tableName}
+          </button>
+        </div>
+      </div>
+    `;
+
+    domElement.querySelector('button').addEventListener('click', async (ev) => {
+      ev.preventDefault();
+      const table = new Table({ tableName });
+      await table.init();
+
+      canvas.add(table);
+    });
+
+    return domElement;
+  });
+
+  parent.innerText = '';
+  btnDivs.forEach((btnDiv) => parent.appendChild(btnDiv));
+}
+
+async function loadSample(canvas) {
   window.db = await initDB();
   const currentDBDom = document.getElementById('js-current-db');
   currentDBDom.innerText = 'sample';
   insertSampleData(window.db);
+
+  const tableNames = await getTableNames();
+  createTableButtons(tableNames, canvas);
 }
 
 function execSql() {
@@ -237,16 +275,8 @@ function registerButtonHandlers(canvas) {
           canvas.add(operator);
           break;
         }
-        case 'table': {
-          const { tableName } = btn.dataset;
-          const table = new Table({ tableName });
-          await table.init();
-
-          canvas.add(table);
-          break;
-        }
         case 'load':
-          await loadSample();
+          await loadSample(canvas);
           break;
         case 'create-db':
           await createDB();
@@ -258,7 +288,7 @@ function registerButtonHandlers(canvas) {
           run(canvas.getActiveObject());
           break;
         case 'clear':
-          canvas.clearAll();
+          canvas.clear();
           break;
         case 'delete':
           deleteObject(canvas.getActiveObject(), canvas);

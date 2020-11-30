@@ -113,6 +113,13 @@ export function decryptQueryData(data, rootNode) {
   return query;
 }
 
+export async function getTableNames() {
+  const sql = 'SELECT name FROM sqlite_master WHERE type="table"';
+  const ret = window.db.exec(sql);
+
+  return ret[0].values.map((val) => val[0]);
+}
+
 export async function initDB() {
   const sql = await createSqlWasm({
     wasmUrl: './sqlite3.wasm',

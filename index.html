@@ -4,12 +4,6 @@
 <head>
   <meta charset="utf-8">
   <title>T-Rax</title>
-
-  <style>
-    .btn-operator {
-      font-size: 1.5rem !important;
-    }
-  </style>
 </head>
 
 <body>
@@ -38,100 +32,69 @@
                 DB</button>
             </div>
           </div>
-          <div class="row mt-2">
-            <div class="col-sm-2"></div>
-            <div class="col-sm-8">
-              <button class="btn btn-success btn-block btn-operator" data-type="operator" data-operator-type="sigma"
-                type="submit">σ</button>
-            </div>
+
+          Tables:
+          <div id="js-table-btns">
+            Initialize a database first
           </div>
-          <div class="row mt-2">
-            <div class="col-sm-2"></div>
-            <div class="col-sm-8">
-              <button class="btn btn-success btn-block btn-operator" data-type="operator" data-operator-type="project"
-                type="submit">∏</button>
-            </div>
-          </div>
-          <div class="row mt-2">
-            <div class="col-sm-2"></div>
-            <div class="col-sm-8">
-              <button class="btn btn-success btn-block btn-operator btn-union" data-type="operator"
-                data-operator-type="union" type="submit">∪</button>
-            </div>
-          </div>
-          <div class="row mt-2">
-            <div class="col-sm-2"></div>
-            <div class="col-sm-8">
-              <button class="btn btn-success btn-block btn-operator" data-type="operator" data-operator-type="intersect"
-                type="submit">∩</button>
-            </div>
-          </div>
-          <div class="row mt-2">
-            <div class="col-sm-2"></div>
-            <div class="col-sm-8">
-              <button class="btn btn-success btn-block btn-operator" data-type="operator" data-operator-type="join"
-                type="submit">⋈</button>
-            </div>
-          </div>
-          <div class="row mt-2">
-            <div class="col-sm-2"></div>
-            <div class="col-sm-8">
-              <button class="btn btn-success btn-block" data-type="table" data-table-name="A" type="submit">Table
-                A</button>
-            </div>
-          </div>
-          <div class="row mt-2">
-            <div class="col-sm-2"></div>
-            <div class="col-sm-8">
-              <button class="btn btn-success btn-block" data-type="table" data-table-name="B" type="submit">Table
-                B</button>
-            </div>
-          </div>
+
           <div class="row mt-2">
             <div class="col-sm-2"></div>
             <div class="col-sm-8">
               <button class="btn btn-secondary btn-block" data-type="run" type="submit">Eval</button>
             </div>
           </div>
-          <div class="row mt-2">
-            <div class="col-sm-2"></div>
-            <div class="col-sm-8">
-              <button class="btn btn-warning btn-block" data-type="delete" type="submit">Delete Selection</button>
-            </div>
-          </div>
-          <div class="row mt-2">
-            <div class="col-sm-2"></div>
-            <div class="col-sm-8">
-              <button class="btn btn-danger btn-block" data-type="clear" type="submit">Clear All</button>
-            </div>
-          </div>
+
         </div>
       </div>
 
-      <div class="col-sm-7 ">
+      <div class="js-buttons col-sm-7 ">
         <div class="row mt-2">
-          <div class="col-sm-12 m-0 p-0">
+          <div class="col-sm-12">
             <h5>Current DB : <span id="js-current-db"></span></h5>
           </div>
         </div>
         <div class="row mt-2">
-          <div class="col-sm-12 border m-0 p-0">
-            <canvas id="board" class='img-responsive'></canvas>
+          <div class="col-1">
+            <button class="btn btn-success" data-type="operator" data-operator-type="sigma" type="submit">σ</button>
+          </div>
+          <div class="col-1">
+            <button class="btn btn-success" data-type="operator" data-operator-type="project" type="submit">∏</button>
+          </div>
+          <div class="col-1">
+            <button class="btn btn-success" data-type="operator" data-operator-type="union" type="submit">∪</button>
+          </div>
+          <div class="col-1">
+            <button class="btn btn-success" data-type="operator" data-operator-type="intersect" type="submit">∩</button>
+          </div>
+          <div class="col-1">
+            <button class="btn btn-success" data-type="operator" data-operator-type="join" type="submit">⋈</button>
+          </div>
+          <div class="col-1">
+            <button class="btn btn-warning" data-type="delete" type="submit">✕</button>
+          </div>
+          <div class="col-1">
+            <button class="btn btn-danger" data-type="clear" type="submit">∅</button>
           </div>
         </div>
         <div class="row mt-2">
+          <div class="col-sm-12 border">
+            <canvas id="board" class='img-responsive'></canvas>
+          </div>
+        </div>
+        <div class="row mt-1">
           <div class="col-sm-12 p-0 mt-2 js-buttons">
-            <button class="btn btn-primary btn-lg mb-1" data-type="exec-sql" type="submit">Execute
-              SQL</button>
+            <button class="btn btn-primary btn-lg mb-1" data-type="exec-sql" type="submit">
+              Execute SQL
+            </button>
             <textarea class="form-control" name="sql-code" id="js-sql" rows="10"></textarea>
           </div>
         </div>
       </div>
 
       <div class="col-sm-3">
-        <h1 class="text-center">Query Output</h1>
-
-        <div class="text-center">
+        <h3 class="">Query Output</h3>
+        <div class="">
           <p class="lead">
           <pre id="js-output"></pre>
           </p>
