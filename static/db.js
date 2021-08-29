@@ -1,5 +1,18 @@
 import createSqlWasm from 'sql-wasm';
 
+const getSqlHandler = (() => {
+  let sql = null;
+  return async () => {
+    if (sql == null) {
+      sql = await createSqlWasm({
+        wasmUrl: './sqlite3.wasm',
+      });
+    }
+
+    return sql;
+  };
+})();
+
 export function insertSampleData(db) {
   const sql = `
     CREATE TABLE A (a_id integer PRIMARY KEY, a integer NOT NULL, b text NOT NULL);
@@ -38,9 +51,15 @@ export function decryptQueryData(data, rootNode) {
     }
 
     if (inputTable in data) {
-      query = `Select ${selectCol.slice(0, selectCol.length - 1)} from (${decryptQueryData(data, inputTable)}) as ${inputTable}`;
+      query = `Select ${selectCol.slice(
+        0,
+        selectCol.length - 1
+      )} from (${decryptQueryData(data, inputTable)}) as ${inputTable}`;
     } else {
-      query = `Select ${selectCol.slice(0, selectCol.length - 1)} from ${inputTable}`;
+      query = `Select ${selectCol.slice(
+        0,
+        selectCol.length - 1
+      )} from ${inputTable}`;
     }
   } else if (operator === 'Join') {
     const inputTables = nodeValue.input;
@@ -48,13 +67,17 @@ export function decryptQueryData(data, rootNode) {
     let querySecondTable;
 
     if (inputTables[0] in data) {
-      queryFirstTable = `(${decryptQueryData(data, inputTables[0])}) as ${inputTables[0]}`;
+      queryFirstTable = `(${decryptQueryData(data, inputTables[0])}) as ${
+        inputTables[0]
+      }`;
     } else {
       [queryFirstTable] = inputTables;
     }
 
     if (inputTables[1] in data) {
-      querySecondTable = `(${decryptQueryData(data, inputTables[1])}) as ${inputTables[1]}`;
+      querySecondTable = `(${decryptQueryData(data, inputTables[1])}) as ${
+        inputTables[1]
+      }`;
     } else {
       [, querySecondTable] = inputTables;
     }
@@ -101,7 +124,10 @@ export function decryptQueryData(data, rootNode) {
     const { condition } = nodeValue;
 
     if (inputTable in data) {
-      query = `Select * from (${decryptQueryData(data, inputTable)}) as ${inputTable} where ${inputTable}.${condition}`;
+      query = `Select * from (${decryptQueryData(
+        data,
+        inputTable
+      )}) as ${inputTable} where ${inputTable}.${condition}`;
     } else {
       query = `Select * from ${inputTable} where ${condition}`;
     }
@@ -113,18 +139,15 @@ export function decryptQueryData(data, rootNode) {
   return query;
 }
 
-export async function getTableNames() {
+export async function getTableNames(db) {
   const sql = 'SELECT name FROM sqlite_master WHERE type="table"';
-  const ret = window.db.exec(sql);
+  const ret = db.exec(sql);
 
   return ret[0].values.map((val) => val[0]);
 }
 
 export async function initDB() {
-  const sql = await createSqlWasm({
-    wasmUrl: './sqlite3.wasm',
-  });
-
+  const sql = await getSqlHandler();
   const db = new sql.Database();
   return db;
 }

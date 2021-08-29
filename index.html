@@ -1,123 +1,191 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <title>T-Rax</title>
+  </head>
 
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>T-Rax</title>
-</head>
-
-<body>
-  <div class="container-fluid">
-    <div class="row mt-3">
-      <div class="col-sm-2">
-        <div class="row">
-          <div class="col-sm-12 text-center">
-            <img src="static/assets/dino.png" class="img-responsive text-center" alt="">
-            <h1 class="">T-RaX</h1>
-            <h5 class="text-muted">An interactive tool for exploring Relational Algebra</h5>
+  <body>
+    <div class="container-fluid">
+      <div class="row mt-3">
+        <div class="col-sm-2">
+          <div class="row">
+            <div class="col-sm-12 text-center">
+              <img
+                src="assets/dino.png"
+                class="img-responsive text-center"
+                alt=""
+              />
+              <h1 class="">T-RaX</h1>
+              <h5 class="text-muted">
+                An interactive tool for exploring Relational Algebra
+              </h5>
+            </div>
+          </div>
+          <div class="js-buttons">
+            <div class="row mt-2">
+              <div class="col-sm-2"></div>
+              <div class="col-sm-8">
+                <button
+                  class="btn btn-primary btn-block"
+                  data-type="create-db"
+                  type="submit"
+                >
+                  New DB
+                </button>
+              </div>
+            </div>
+            <div class="row mt-2">
+              <div class="col-sm-2"></div>
+              <div class="col-sm-8">
+                <button
+                  class="btn btn-primary btn-block"
+                  data-type="load"
+                  data-db-type="sample"
+                  type="submit"
+                >
+                  Load Sample DB
+                </button>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="js-buttons">
+
+        <div class="js-buttons col-sm-7">
           <div class="row mt-2">
-            <div class="col-sm-2"></div>
-            <div class="col-sm-8">
-              <button class="btn btn-primary btn-block" data-type="create-db" type="submit">New
-                DB</button>
+            <div class="col-sm-12">
+              <h5>Current DB : <span id="js-current-db"></span></h5>
             </div>
           </div>
           <div class="row mt-2">
-            <div class="col-sm-2"></div>
-            <div class="col-sm-8">
-              <button class="btn btn-primary btn-block" data-type="load" data-db-type="sample" type="submit">Load Sample
-                DB</button>
+            <div class="col-1">
+              <button
+                class="btn btn-success"
+                data-type="operator"
+                data-operator-type="sigma"
+                type="submit"
+              >
+                σ
+              </button>
+            </div>
+            <div class="col-1">
+              <button
+                class="btn btn-success"
+                data-type="operator"
+                data-operator-type="project"
+                type="submit"
+              >
+                ∏
+              </button>
+            </div>
+            <div class="col-1">
+              <button
+                class="btn btn-success"
+                data-type="operator"
+                data-operator-type="union"
+                type="submit"
+              >
+                ∪
+              </button>
+            </div>
+            <div class="col-1">
+              <button
+                class="btn btn-success"
+                data-type="operator"
+                data-operator-type="intersect"
+                type="submit"
+              >
+                ∩
+              </button>
+            </div>
+            <div class="col-1">
+              <button
+                class="btn btn-success"
+                data-type="operator"
+                data-operator-type="join"
+                type="submit"
+              >
+                ⋈
+              </button>
+            </div>
+            <div class="col-1">
+              <button class="btn btn-warning" data-type="delete" type="submit">
+                ✕
+              </button>
+            </div>
+            <div class="col-1">
+              <button class="btn btn-danger" data-type="clear" type="submit">
+                ∅
+              </button>
+            </div>
+            <div class="col-1">
+              <button class="btn btn-info" data-type="run" type="submit">
+                Play
+              </button>
             </div>
           </div>
-
-          Tables:
-          <div id="js-table-btns">
-            Initialize a database first
+          <div class="row">
+            Tables:
+            <div id="js-table-btns">Initialize a database first</div>
           </div>
-
           <div class="row mt-2">
-            <div class="col-sm-2"></div>
-            <div class="col-sm-8">
-              <button class="btn btn-secondary btn-block" data-type="run" type="submit">Eval</button>
+            <div class="col-sm-12 border">
+              <canvas id="board" class="img-responsive"></canvas>
             </div>
           </div>
+          <div class="row mt-1">
+            <div class="col-sm-12 p-0 mt-2 js-buttons">
+              <button
+                class="btn btn-primary btn-lg mb-1"
+                data-type="execute"
+                type="submit"
+              >
+                Execute SQL
+              </button>
+              <textarea
+                class="form-control"
+                name="sql-code"
+                id="js-sql"
+                rows="10"
+              ></textarea>
+            </div>
+          </div>
+        </div>
 
+        <div class="col-sm-3">
+          <h3 class="">Query Output</h3>
+          <div class="">
+            <p class="lead"></p>
+            <pre id="js-output"></pre>
+          </div>
         </div>
       </div>
 
-      <div class="js-buttons col-sm-7 ">
-        <div class="row mt-2">
-          <div class="col-sm-12">
-            <h5>Current DB : <span id="js-current-db"></span></h5>
-          </div>
-        </div>
-        <div class="row mt-2">
-          <div class="col-1">
-            <button class="btn btn-success" data-type="operator" data-operator-type="sigma" type="submit">σ</button>
-          </div>
-          <div class="col-1">
-            <button class="btn btn-success" data-type="operator" data-operator-type="project" type="submit">∏</button>
-          </div>
-          <div class="col-1">
-            <button class="btn btn-success" data-type="operator" data-operator-type="union" type="submit">∪</button>
-          </div>
-          <div class="col-1">
-            <button class="btn btn-success" data-type="operator" data-operator-type="intersect" type="submit">∩</button>
-          </div>
-          <div class="col-1">
-            <button class="btn btn-success" data-type="operator" data-operator-type="join" type="submit">⋈</button>
-          </div>
-          <div class="col-1">
-            <button class="btn btn-warning" data-type="delete" type="submit">✕</button>
-          </div>
-          <div class="col-1">
-            <button class="btn btn-danger" data-type="clear" type="submit">∅</button>
-          </div>
-        </div>
-        <div class="row mt-2">
-          <div class="col-sm-12 border">
-            <canvas id="board" class='img-responsive'></canvas>
-          </div>
-        </div>
-        <div class="row mt-1">
-          <div class="col-sm-12 p-0 mt-2 js-buttons">
-            <button class="btn btn-primary btn-lg mb-1" data-type="exec-sql" type="submit">
-              Execute SQL
-            </button>
-            <textarea class="form-control" name="sql-code" id="js-sql" rows="10"></textarea>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-sm-3">
-        <h3 class="">Query Output</h3>
-        <div class="">
-          <p class="lead">
-          <pre id="js-output"></pre>
+      <footer class="footer">
+        <div class="container-fluid text-center">
+          <p class="m-0 p-0">
+            Hosted with <span class="text-danger">&hearts;</span> on
+            <a href="https://github.com/kartikanand/rax">Github</a>
           </p>
+          <p class="text-muted m-0 p-0">
+            Icons made by
+            <a href="https://www.flaticon.com/authors/freepik" title="Freepik"
+              >Freepik</a
+            >
+            from
+            <a href="https://www.flaticon.com/" title="Flaticon"
+              >www.flaticon.com</a
+            >
+          </p>
+          <div></div>
         </div>
-      </div>
+      </footer>
     </div>
 
-    <footer class="footer">
-      <div class="container-fluid text-center">
-        <p class="m-0 p-0">
-          Hosted with <span class="text-danger">&hearts;</span> on <a
-            href="https://github.com/kartikanand/rax">Github</a>
-        </p>
-        <p class="text-muted m-0 p-0">
-          Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from
-          <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>
-        </p>
-        <div></div>
-      </div>
-    </footer>
-
     <script src="index.js"></script>
-</body>
-
+  </body>
 </html>

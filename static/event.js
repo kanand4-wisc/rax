@@ -1,11 +1,29 @@
 import { fabric } from 'fabric';
 import AsciiTable from 'ascii-table';
 import {
-  Anchor, Line, Sigma, Join, Project, Table, Union, Intersect, Node,
+  Anchor,
+  Line,
+  Sigma,
+  Join,
+  Project,
+  Table,
+  Union,
+  Intersect,
+  Node,
 } from './node';
 import {
-  initDB, insertSampleData, decryptQueryData, runQuery, getTableNames,
-} from './sql';
+  initDB,
+  insertSampleData,
+  decryptQueryData,
+  runQuery,
+  getTableNames,
+} from './db';
+
+const state = {
+  canvas: null,
+  db: null,
+  dbname: null,
+};
 
 function checkOrGetAnchor(ev) {
   const subTargets = ev.currentSubTargets || ev.subTargets;
@@ -66,17 +84,14 @@ function canvasMouseMoveEventHandler(ev, canvas, connectorConfig) {
     // object position in a group is relative to the center of the group
     // thus we need to add group center position to get the absolute
     // coordinates
-    const x1 = connectorConfig.startAnchor.getCenterPoint().x
-      + connectorConfig.startAnchor.group.getCenterPoint().x;
-    const y1 = connectorConfig.startAnchor.getCenterPoint().y
-      + connectorConfig.startAnchor.group.getCenterPoint().y;
+    const x1 =
+      connectorConfig.startAnchor.getCenterPoint().x +
+      connectorConfig.startAnchor.group.getCenterPoint().x;
+    const y1 =
+      connectorConfig.startAnchor.getCenterPoint().y +
+      connectorConfig.startAnchor.group.getCenterPoint().y;
 
-    connectorConfig.connectorLine = new Line([
-      x1,
-      y1,
-      x,
-      y,
-    ]);
+    connectorConfig.connectorLine = new Line([x1, y1, x, y]);
 
     canvas.add(connectorConfig.connectorLine);
     canvas.sendToBack(connectorConfig.connectorLine);
@@ -91,10 +106,12 @@ function canvasMouseUpEventHandler(ev, canvas, connectorConfig) {
   // get target anchor
   const anchor = checkOrGetAnchor(ev);
 
-  if (!anchor
-    || connectorConfig.startAnchor === anchor
-    || connectorConfig.startAnchor.group === anchor.group
-    || connectorConfig.startAnchor.direction === anchor.direction) {
+  if (
+    !anchor ||
+    connectorConfig.startAnchor === anchor ||
+    connectorConfig.startAnchor.group === anchor.group ||
+    connectorConfig.startAnchor.direction === anchor.direction
+  ) {
     // remove line from the canvas
     canvas.remove(connectorConfig.connectorLine);
   } else {
@@ -110,13 +127,18 @@ function canvasMouseUpEventHandler(ev, canvas, connectorConfig) {
 
     // output anchor will be the one whose "input" anchor is
     // being connected to
-    const [inputAnchor, outputAnchor] = anchor.direction === 'output'
-      ? [anchor, connectorConfig.startAnchor] : [connectorConfig.startAnchor, anchor];
+    const [inputAnchor, outputAnchor] =
+      anchor.direction === 'output'
+        ? [anchor, connectorConfig.startAnchor]
+        : [connectorConfig.startAnchor, anchor];
 
     connectorConfig.connectorLine.inputAnchor = inputAnchor;
     connectorConfig.connectorLine.outputAnchor = outputAnchor;
 
-    const [inputOperator, outputOperator] = [inputAnchor.group, outputAnchor.group];
+    const [inputOperator, outputOperator] = [
+      inputAnchor.group,
+      outputAnchor.group,
+    ];
     outputOperator.inputs.push(inputOperator);
 
     // save line to anchors to update while moving the node
@@ -163,7 +185,7 @@ function deleteObject(target, canvas) {
 }
 
 function run(target) {
-  if (!window.db) return;
+  if (!state.db) return;
   if (!target || !(target instanceof Node)) return;
 
   const jsonObj = {};
@@ -173,7 +195,7 @@ function run(target) {
   jsonObj.root = root;
 
   const query = decryptQueryData(jsonObj, root);
-  const data = runQuery(window.db, query);
+  const data = runQuery(state.db, query);
 
   const table = new AsciiTable('');
   const { columns } = data[0];
@@ -226,25 +248,44 @@ function createTableButtons(tableNames, canvas) {
   btnDivs.forEach((btnDiv) => parent.appendChild(btnDiv));
 }
 
-async function loadSample(canvas) {
-  window.db = await initDB();
-  const currentDBDom = document.getElementById('js-current-db');
-  currentDBDom.innerText = 'sample';
-  insertSampleData(window.db);
-
-  const tableNames = await getTableNames();
-  createTableButtons(tableNames, canvas);
+async function updateTableButtons() {
+  const tableNames = await getTableNames(state.db);
+  createTableButtons(tableNames, state.canvas);
 }
 
-function execSql() {
-  const sql = document.getElementById('js-sql').value;
-  if (!sql) return;
+async function loadSample() {
+  state.db = await initDB();
+  const currentDBDom = document.getElementById('js-current-db');
+  currentDBDom.innerText = 'sample';
+  insertSampleData(state.db);
 
-  window.db.run(sql);
+  updateTableButtons();
+}
+
+async function executeSql() {
+  if (!state.db) {
+    return;
+  }
+
+  const query = document.getElementById('js-sql').value;
+  if (!query) {
+    return;
+  }
+
+  let terminalOutput = query;
+  try {
+    const output = runQuery(state.db, query);
+    terminalOutput = `${query}\n${output}`;
+  } catch (err) {
+    terminalOutput = `${query}\n${err.message}`;
+  }
+  document.getElementById('js-sql').value = terminalOutput;
+
+  updateTableButtons();
 }
 
 async function createDB() {
-  window.db = await initDB();
+  state.db = await initDB();
   const currentDBDom = document.getElementById('js-current-db');
   currentDBDom.innerText = 'new db';
 }
@@ -281,8 +322,8 @@ function registerButtonHandlers(canvas) {
         case 'create-db':
           await createDB();
           break;
-        case 'exec-sql':
-          execSql();
+        case 'execute':
+          await executeSql();
           break;
         case 'run':
           run(canvas.getActiveObject());
@@ -344,4 +385,6 @@ export default function initCanvas() {
   canvas.renderAll();
 
   addEventListeners(canvas);
+
+  state.canvas = canvas;
 }

@@ -49,9 +49,7 @@ export class Line extends fabric.Line {
 }
 
 export class Anchor extends fabric.Circle {
-  constructor({
-    radius, fill, left, top, direction,
-  }) {
+  constructor({ radius, fill, left, top, direction }) {
     super({
       radius,
       fill,
@@ -89,9 +87,10 @@ function getAnchor({ nodeCenterPoint, assetRadius, direction }) {
   const radius = 5;
   const fill = '#ffc4c4';
   const left = nodeCenterPoint.x;
-  const top = direction === 'input'
-    ? nodeCenterPoint.y + assetRadius + margin + radius
-    : nodeCenterPoint.y - assetRadius - margin - radius;
+  const top =
+    direction === 'input'
+      ? nodeCenterPoint.y + assetRadius + margin + radius
+      : nodeCenterPoint.y - assetRadius - margin - radius;
 
   const anchor = new Anchor({
     radius,
@@ -121,9 +120,7 @@ function getTextBox({ text, nodeCenterPoint, assetRadius }) {
 }
 
 export class Node extends fabric.Group {
-  constructor({
-    assetName, assetScale, text, hasInput, hasOutput,
-  }) {
+  constructor({ assetName, assetScale, text, hasInput, hasOutput }) {
     // initialize empty group
     super([], {
       left: 100,
@@ -272,7 +269,7 @@ class Operator extends Node {
 export class Sigma extends Operator {
   constructor() {
     const operatorName = 'sigma';
-    const assetScale = 0.030;
+    const assetScale = 0.03;
     const condition = window.prompt('Enter condition');
 
     super({
