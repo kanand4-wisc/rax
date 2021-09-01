@@ -215,25 +215,21 @@ function canvasOnSelectHandler(ev) {
 
 function createTableButtons(tableNames, canvas) {
   const parent = document.getElementById('js-table-btns');
+  parent.innerHTML = '';
 
   const btnDivs = tableNames.map((tableName) => {
-    const domElement = document.createElement('div');
-    domElement.innerHTML = `
-      <div class="row mt-2">
-        <div class="col-sm-2"></div>
-        <div class="col-sm-8">
-          <button 
-            class="btn btn-success btn-block" 
-            data-type="table" 
-            data-table-name="${tableName}" 
-            type="submit">
-            ${tableName}
-          </button>
-        </div>
-      </div>
-    `;
+    const domElement = document.createElement('button');
+    domElement.classList.add('btn');
+    domElement.classList.add('btn-success');
+    domElement.classList.add('me-1');
 
-    domElement.querySelector('button').addEventListener('click', async (ev) => {
+    domElement.setAttribute('data-type', 'table');
+    domElement.setAttribute('data-table-name', tableName);
+    domElement.setAttribute('type', 'submit');
+
+    domElement.innerText = tableName;
+
+    domElement.addEventListener('click', async (ev) => {
       ev.preventDefault();
       const table = new Table({ tableName });
       await table.init();
@@ -284,6 +280,11 @@ async function executeSql() {
   updateTableButtons();
 }
 
+async function clearSql() {
+  document.getElementById('js-sql').value = '';
+  state.editor.setValue('');
+}
+
 async function createDB() {
   state.db = await initDB();
   const currentDBDom = document.getElementById('js-current-db');
@@ -322,8 +323,11 @@ function registerButtonHandlers(canvas) {
         case 'create-db':
           await createDB();
           break;
-        case 'execute':
+        case 'execute-sql':
           await executeSql();
+          break;
+        case 'clear-sql':
+          await clearSql();
           break;
         case 'run':
           run(canvas.getActiveObject());
@@ -386,5 +390,17 @@ export default function initCanvas() {
 
   addEventListeners(canvas);
 
+  const editor = CodeMirror.fromTextArea(document.getElementById('js-sql'), {
+    mode: 'text/x-mysql',
+    viewportMargin: Infinity,
+    indentWithTabs: true,
+    smartIndent: true,
+    lineNumbers: true,
+    matchBrackets: true,
+    autofocus: true,
+    extraKeys: {},
+  });
+
   state.canvas = canvas;
+  state.editor = editor;
 }

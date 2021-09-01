@@ -23,7 +23,6 @@
   "homepage": "https://github.com/kartikanand/rax#readme",
   "dependencies": {
     "ascii-table": "0.0.9",
-    "bootswatch": "^4.5.2",
     "fabric": "^4.2.0",
     "sql-wasm": "^1.1.4"
   },
