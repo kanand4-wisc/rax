@@ -397,7 +397,7 @@ export default function initCanvas() {
     smartIndent: true,
     lineNumbers: true,
     matchBrackets: true,
-    autofocus: true,
+    autofocus: false,
     extraKeys: {},
   });
 

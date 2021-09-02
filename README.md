@@ -1,6 +1,7 @@
 # rax
-An educational tool for learning relational algebra
 
+An educational tool for exploring relational algebra
 
 ## Demo
+
 [Click here](http://www.kartikanand.com/rax/)
