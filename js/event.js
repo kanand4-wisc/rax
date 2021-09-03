@@ -30,6 +30,17 @@ const getState = (() => {
   return () => state;
 })();
 
+function formatSqlOutput(data) {
+  const table = new AsciiTable('');
+  const { columns } = data[0];
+  table.setHeading(...columns);
+  for (const row of data[0].values) {
+    table.addRow(...row);
+  }
+
+  return table;
+}
+
 function checkOrGetAnchor(ev) {
   const subTargets = ev.currentSubTargets || ev.subTargets;
 
@@ -204,15 +215,8 @@ function run(target) {
   const query = decryptQueryData(jsonObj, root);
   const data = runQuery(state.db, query);
 
-  const table = new AsciiTable('');
-  const { columns } = data[0];
-  table.setHeading(...columns);
-  for (const row of data[0].values) {
-    table.addRow(...row);
-  }
-
   const out = document.getElementById('js-output');
-  out.innerText = table;
+  out.innerText = formatSqlOutput(data);
 }
 
 function canvasOnSelectHandler(ev) {
@@ -279,14 +283,14 @@ async function executeSql(query) {
     return;
   }
 
-  let terminalOutput = query;
+  let terminalOutput = null;
   try {
-    const output = runQuery(state.db, query);
-    terminalOutput = `${query}\n${output}`;
+    const data = runQuery(state.db, query);
+    terminalOutput = formatSqlOutput(data);
   } catch (err) {
-    terminalOutput = `${query}\n${err.message}`;
+    terminalOutput = err.message;
   }
-  document.getElementById('js-sql').value = terminalOutput;
+  document.getElementById('js-output').innerText = terminalOutput;
 
   updateTableButtons();
 }
@@ -339,7 +343,8 @@ function registerButtonHandlers(canvas) {
           await createDB();
           break;
         case 'execute-sql': {
-          const query = document.getElementById('js-sql').value;
+          const state = getState();
+          const query = state.editor.getValue();
 
           await executeSql(query);
           break;
@@ -403,12 +408,7 @@ function initCanvas() {
   canvas.setHeight(canvasHeight);
   canvas.setWidth(canvasWidth);
 
-  canvas.renderAll();
-
-  addEventListeners(canvas);
-
-  const state = getState();
-  state.canvas = canvas;
+  return canvas;
 }
 
 function initSqlEditor() {
@@ -426,11 +426,18 @@ function initSqlEditor() {
     }
   );
 
-  const state = getState();
-  state.editor = editor;
+  return editor;
 }
 
 export default function initApp() {
-  initCanvas();
-  initSqlEditor();
+  const canvas = initCanvas();
+  const editor = initSqlEditor();
+
+  const state = getState();
+  state.editor = editor;
+  state.canvas = canvas;
+
+  addEventListeners(canvas);
+
+  canvas.renderAll();
 }
