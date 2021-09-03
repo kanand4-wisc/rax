@@ -1,0 +1,1 @@
+{"version":3,"sources":["styles.css"],"names":[],"mappings":"AAAA,YACE,qBAAsB,CACtB,WACF,CAEA,mBACE,iBAAkB,CAClB,eACF","file":"styles.1c7200b1.css","sourceRoot":"..","sourcesContent":[".CodeMirror {\n  border: 1px solid #222;\n  height: auto;\n}\n\n.CodeMirror-scroll {\n  overflow-y: hidden;\n  overflow-x: auto;\n}\n"]}
