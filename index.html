@@ -57,6 +57,7 @@
         </div>
 
         <div class="js-buttons col-8">
+          <h1>Playground</h1>
           <div class="btn-toolbar mt-2" role="toolbar" aria-label="Toolbar">
             <div
               class="btn-group btn-group-lg me-2"
@@ -64,7 +65,7 @@
               aria-label="Operators"
             >
               <button
-                class="btn btn-outline-success"
+                class="btn btn-outline-info"
                 data-type="operator"
                 data-operator-type="sigma"
                 type="submit"
@@ -72,7 +73,7 @@
                 σ
               </button>
               <button
-                class="btn btn-outline-success"
+                class="btn btn-outline-info"
                 data-type="operator"
                 data-operator-type="project"
                 type="submit"
@@ -80,7 +81,7 @@
                 ∏
               </button>
               <button
-                class="btn btn-outline-success"
+                class="btn btn-outline-info"
                 data-type="operator"
                 data-operator-type="union"
                 type="submit"
@@ -88,7 +89,7 @@
                 ∪
               </button>
               <button
-                class="btn btn-outline-success"
+                class="btn btn-outline-info"
                 data-type="operator"
                 data-operator-type="intersect"
                 type="submit"
@@ -96,7 +97,7 @@
                 ∩
               </button>
               <button
-                class="btn btn-outline-success"
+                class="btn btn-outline-info"
                 data-type="operator"
                 data-operator-type="join"
                 type="submit"
@@ -121,15 +122,13 @@
               role="group"
               aria-label="Play button"
             >
-              <button class="btn btn-info" data-type="run" type="submit">
+              <button class="btn btn-success" data-type="run" type="submit">
                 ▶
               </button>
             </div>
           </div>
-          <canvas
-            id="board"
-            class="img-responsive border border-secondary mt-1"
-          ></canvas>
+          <canvas id="board" class="border border-secondary mt-1"></canvas>
+          <h1 class="mt-2">SQL Terminal</h1>
           <form class="mt-2">
             <textarea
               class="form-control"
@@ -138,22 +137,22 @@
               rows="10"
             ></textarea>
             <button
-              class="btn btn-primary btn-lg mb-1 mt-1"
+              class="btn btn-success btn-lg mb-1 mt-1"
               data-type="execute-sql"
               type="submit"
             >
               Execute SQL
             </button>
             <button
-              class="btn btn-primary btn-lg mb-1 mt-1"
+              class="btn btn-danger btn-lg mb-1 mt-1"
               data-type="clear-sql"
               type="submit"
             >
               Clear
             </button>
           </form>
-          <h3 class="mt-2">Output</h3>
-          <pre id="js-output"></pre>
+          <h1 class="mt-2">Output</h1>
+          <pre id="js-output" class="sql-output border border-secondary"></pre>
         </div>
       </div>
     </div>

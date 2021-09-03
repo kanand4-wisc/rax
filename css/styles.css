@@ -7,3 +7,14 @@
   overflow-y: hidden;
   overflow-x: auto;
 }
+
+.sql-output {
+  min-height: 20rem;
+  width: 100%;
+  background-color: aliceblue;
+}
+
+#board {
+  width: 100%;
+  height: 30rem;
+}

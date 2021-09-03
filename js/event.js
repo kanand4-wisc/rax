@@ -19,12 +19,16 @@ import {
   getTableNames,
 } from './db';
 
-const state = {
-  canvas: null,
-  editor: null,
-  db: null,
-  dbname: null,
-};
+const getState = (() => {
+  const state = {
+    canvas: null,
+    editor: null,
+    db: null,
+    dbname: null,
+  };
+
+  return () => state;
+})();
 
 function checkOrGetAnchor(ev) {
   const subTargets = ev.currentSubTargets || ev.subTargets;
@@ -186,6 +190,8 @@ function deleteObject(target, canvas) {
 }
 
 function run(target) {
+  const state = getState();
+
   if (!state.db) return;
   if (!target || !(target instanceof Node)) return;
 
@@ -246,11 +252,15 @@ function createTableButtons(tableNames, canvas) {
 }
 
 async function updateTableButtons() {
+  const state = getState();
+
   const tableNames = await getTableNames(state.db);
   createTableButtons(tableNames, state.canvas);
 }
 
 async function loadSample() {
+  const state = getState();
+
   state.db = await initDB();
   const currentDBDom = document.getElementById('js-current-db');
   currentDBDom.innerText = 'sample';
@@ -259,13 +269,13 @@ async function loadSample() {
   updateTableButtons();
 }
 
-async function executeSql() {
-  if (!state.db) {
+async function executeSql(query) {
+  if (!query) {
     return;
   }
 
-  const query = document.getElementById('js-sql').value;
-  if (!query) {
+  const state = getState();
+  if (!state.db) {
     return;
   }
 
@@ -282,11 +292,15 @@ async function executeSql() {
 }
 
 async function clearSql() {
+  const state = getState();
+
   document.getElementById('js-sql').value = '';
   state.editor.setValue('');
 }
 
 async function createDB() {
+  const state = getState();
+
   state.db = await initDB();
   const currentDBDom = document.getElementById('js-current-db');
   currentDBDom.innerText = 'new db';
@@ -324,9 +338,12 @@ function registerButtonHandlers(canvas) {
         case 'create-db':
           await createDB();
           break;
-        case 'execute-sql':
-          await executeSql();
+        case 'execute-sql': {
+          const query = document.getElementById('js-sql').value;
+
+          await executeSql(query);
           break;
+        }
         case 'clear-sql':
           await clearSql();
           break;
@@ -372,36 +389,48 @@ function addEventListeners(canvas) {
   registerButtonHandlers(canvas);
 }
 
-export default function initCanvas() {
+function initCanvas() {
   const canvasId = 'board';
   const canvasDom = document.getElementById(canvasId);
 
-  const parentWidth = canvasDom.parentNode.offsetWidth;
-  canvasDom.width = parentWidth;
-  canvasDom.height = '600';
+  const canvasWidth = canvasDom.clientWidth;
+  const canvasHeight = canvasDom.clientHeight;
 
   const canvas = new fabric.Canvas(canvasId);
 
   // disable group selection
   canvas.selection = false;
-  canvas.setHeight(600);
-  canvas.setWidth(parentWidth);
+  canvas.setHeight(canvasHeight);
+  canvas.setWidth(canvasWidth);
 
   canvas.renderAll();
 
   addEventListeners(canvas);
 
-  const editor = CodeMirror.fromTextArea(document.getElementById('js-sql'), {
-    mode: 'text/x-mysql',
-    viewportMargin: Infinity,
-    indentWithTabs: true,
-    smartIndent: true,
-    lineNumbers: true,
-    matchBrackets: true,
-    autofocus: false,
-    extraKeys: {},
-  });
-
+  const state = getState();
   state.canvas = canvas;
+}
+
+function initSqlEditor() {
+  const editor = window.CodeMirror.fromTextArea(
+    document.getElementById('js-sql'),
+    {
+      mode: 'text/x-mysql',
+      viewportMargin: Infinity,
+      indentWithTabs: true,
+      smartIndent: true,
+      lineNumbers: true,
+      matchBrackets: true,
+      autofocus: false,
+      extraKeys: {},
+    }
+  );
+
+  const state = getState();
   state.editor = editor;
+}
+
+export default function initApp() {
+  initCanvas();
+  initSqlEditor();
 }
