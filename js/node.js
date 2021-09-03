@@ -270,7 +270,7 @@ export class Sigma extends Operator {
   constructor() {
     const operatorName = 'sigma';
     const assetScale = 0.03;
-    const condition = window.prompt('Enter condition');
+    const condition = window.prompt('Enter select condition');
 
     super({
       operatorName,

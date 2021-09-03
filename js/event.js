@@ -21,6 +21,7 @@ import {
 
 const state = {
   canvas: null,
+  editor: null,
   db: null,
   dbname: null,
 };
