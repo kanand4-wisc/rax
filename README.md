@@ -1,6 +1,6 @@
 # rax
 
-An educational tool for exploring relational algebra
+An interactive tool for exploring relational algebra
 
 ## Demo
 
