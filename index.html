@@ -7,7 +7,7 @@
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
 
-    <title>T-Rax</title>
+    <title>Rax</title>
 
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css"
@@ -40,17 +40,13 @@
         <div class="col-sm-2">
           <div class="row">
             <div class="col-sm-12">
-              <img
-                src="assets/dino.png"
-                class="img-responsive text-center"
-                alt=""
-              />
-              <h1 class="">T-RaX</h1>
+              <h1 class="">RaX</h1>
               <h5 class="text-muted">
                 An interactive tool for exploring Relational Algebra
               </h5>
             </div>
           </div>
+          <hr />
           <div class="js-buttons">
             <div class="d-grid gap-2 mt-2">
               <button
@@ -70,10 +66,21 @@
               </button>
             </div>
           </div>
+          <hr />
+          <h5>Current DB :</span></h5>
+          <p id="js-current-db">
+            No database
+          </p>
+          <hr />
+          <h5 class="mt-1">Tables :</h5>
+          <div class="row">
+            <div class="col-12" id="js-table-btns">
+              Initialize a database first
+            </div>
+          </div>
         </div>
 
         <div class="js-buttons col-8">
-          <h5>Current DB : <span id="js-current-db"></span></h5>
           <div class="btn-toolbar mt-2" role="toolbar" aria-label="Toolbar">
             <div
               class="btn-group btn-group-lg me-2"
@@ -143,12 +150,6 @@
               </button>
             </div>
           </div>
-          <h5 class="mt-1">Tables :</h5>
-          <div class="row">
-            <div class="col-12" id="js-table-btns">
-              Initialize a database first
-            </div>
-          </div>
           <canvas id="board" class="img-responsive border mt-1"></canvas>
           <div class="row mt-1">
             <div class="col-sm-12 mt-2 js-buttons">
@@ -206,22 +207,6 @@ INSERT INTO B VALUES (3, "TX", 5);
           </div>
         </div>
       </div>
-
-      <footer class="footer">
-        <div class="container-fluid text-center">
-          <p class="text-muted m-0 p-0">
-            Icons made by
-            <a href="https://www.flaticon.com/authors/freepik" title="Freepik"
-              >Freepik</a
-            >
-            from
-            <a href="https://www.flaticon.com/" title="Flaticon"
-              >www.flaticon.com</a
-            >
-          </p>
-          <div></div>
-        </div>
-      </footer>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.1/mode/sql/sql.min.js"></script>
